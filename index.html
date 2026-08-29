@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>StackCollectives — SUTD Capstone team</title>
+<meta name="description" content="StackCollectives is a seven-engineer SUTD capstone team sourcing a student-initiated industry project with a Singapore company, September 2027 – April 2028." />
+<script src="./ds-base.js"></script>
+<style>
+/* Page scaffolding on the Industry landing grammar — every color, font,
+   radius and shadow comes from the DS styles.css. 24px leading unit,
+   12px half-step; kicker-over-rule section heads; plates with
+   registration crosses for tabulated data; wireframe cells for cards.
+   ?baselines or B toggles the rhythm overlay. */
+:root {
+  --leading: 24px;
+  --half: 12px;
+  --edge: clamp(20px, 5vw, 72px);
+  --measure: 60ch;
+}
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; text-wrap: pretty; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent-900); }
+a.btn { text-decoration: none; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 var(--edge); }
+.nav { position: sticky; top: 0; z-index: 100;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-divider);
+  padding-inline: max(var(--edge), calc((100% - 1200px) / 2 + var(--edge))); }
+.nav a { white-space: nowrap; }
+@media (max-width: 640px) { .nav a:not(.btn) { display: none; } }
+
+/* — kicker over a drawn rule — */
+.kicker {
+  display: block; font-size: 13px; line-height: var(--half);
+  letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
+  color: var(--color-accent-700);
+  font-feature-settings: "tnum" 1;
+  margin: 0 0 var(--half);
+}
+.caption-rule { height: 1px; border: 0; margin: 0 0 calc(var(--leading) - var(--half));
+  background: var(--color-divider); }
+.tagline { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 32px; line-height: calc(1.5 * var(--leading)); letter-spacing: 0.02em; text-transform: uppercase;
+  margin: 0 0 var(--leading); max-width: var(--measure);
+  color: var(--color-text); }
+
+/* — hero — */
+.hero { padding: calc(4 * var(--leading)) 0 calc(3 * var(--leading)); }
+.display {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: clamp(48px, 7vw, 96px);
+  line-height: clamp(50px, 7.3vw, 100px);
+  letter-spacing: 0.01em; text-transform: uppercase; margin: 0;
+  margin-left: -0.052em;
+  text-box: trim-both cap alphabetic;
+}
+.display .line { display: block; }
+.hero .sub { font-size: 19px; line-height: var(--leading); max-width: var(--measure);
+  margin: calc(1.5 * var(--leading) - 1cap) 0 0;
+  text-box: trim-both cap alphabetic; }
+.close .row { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--leading); }
+
+/* — registration crosses shared by every framed object — */
+.plate, .cell-frame, .member { position: relative; border: 1px solid var(--color-divider); }
+.plate > .corner, .cell-frame > .corner, .member > .corner {
+  position: absolute; width: 15px; height: 15px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent); pointer-events: none; }
+.plate > .corner::before, .cell-frame > .corner::before, .member > .corner::before {
+  content: ""; position: absolute; left: 7px; top: 0; width: 1px; height: 100%; background: currentColor; }
+.plate > .corner::after, .cell-frame > .corner::after, .member > .corner::after {
+  content: ""; position: absolute; top: 7px; left: 0; width: 100%; height: 1px; background: currentColor; }
+.corner.tl { top: -8px; left: -8px; }
+.corner.tr { top: -8px; right: -8px; }
+.corner.bl { bottom: -8px; left: -8px; }
+.corner.br { bottom: -8px; right: -8px; }
+
+/* — the data plates (sheets 01 and 02) — */
+.sheet { padding: calc(3 * var(--leading)) 0 calc(2.5 * var(--leading)); }
+.title-block { display: flex; flex-wrap: wrap; align-items: stretch; justify-content: flex-end;
+  border-bottom: 1px solid var(--color-divider); }
+.title-block > span { padding: var(--half) var(--leading);
+  font-size: 13px; line-height: var(--leading); letter-spacing: 0.08em;
+  text-transform: uppercase; font-weight: 600; font-feature-settings: "tnum" 1; }
+.tb-cell { border-left: 1px solid var(--color-divider); white-space: nowrap;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+.spec { table-layout: fixed; }
+.spec col.c-num { width: calc(3 * var(--leading)); }
+.spec col.c-prop { width: 30%; }
+.spec col.c-val { width: 21%; }
+.spec th, .spec td { padding: var(--half) var(--leading) var(--half) 0; vertical-align: middle; }
+.spec th:first-child, .spec td:first-child { padding-left: var(--leading); }
+.spec th { font-size: 13px; line-height: var(--half); font-weight: 600;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+.spec td { font-size: 18px; line-height: var(--leading); }
+.spec .s-num { font-size: 13px; font-weight: 600; letter-spacing: 0.08em;
+  color: var(--color-accent-700); font-feature-settings: "tnum" 1; }
+.spec .s-val { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 22px; line-height: var(--leading); letter-spacing: 0.02em;
+  font-feature-settings: "tnum" 1; white-space: nowrap; }
+.spec .s-rem { color: color-mix(in srgb, var(--color-text) 78%, transparent); }
+.spec tbody tr:last-child td { border-bottom: 0; }
+.spec tbody tr:hover { background: none; }
+.sheet-note { margin: 0; padding: var(--half) var(--leading);
+  border-top: 1px solid var(--color-divider);
+  font-size: 16px; line-height: var(--leading);
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+
+/* — sections & wireframe cells — */
+.section { padding: calc(2.5 * var(--leading)) 0 calc(2 * var(--leading)); }
+.section > .caption-rule { margin-bottom: calc(var(--leading) + 8px); }
+.cells { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(20px, 3vw, 48px);
+  margin-top: calc(var(--leading) - var(--half)); }
+.cells.two { grid-template-columns: repeat(2, 1fr); }
+.cell-frame { padding: var(--leading); }
+.cell-frame h3 { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 22px; line-height: var(--leading); letter-spacing: 0.02em; text-transform: uppercase;
+  margin: 0; text-box: trim-both cap alphabetic; }
+.cell-frame .meta { display: block; font-size: 13px; line-height: var(--leading);
+  letter-spacing: 0.04em; font-feature-settings: "tnum" 1;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  margin: var(--half) 0 0; }
+.cell-frame p { font-size: 18px; line-height: var(--leading); margin: calc(var(--leading) - 1cap) 0 0;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+  text-box: trim-both cap alphabetic; }
+.points { list-style: none; margin: calc(var(--leading) - var(--half)) 0 0; padding: 0; }
+.points li { position: relative; font-size: 17.5px; line-height: var(--leading);
+  padding: 4px 0 4px 18px;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent); }
+.points li::before { content: ""; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; background: var(--color-accent); }
+
+/* — member cards — */
+.members { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: clamp(24px, 2.5vw, 36px); margin-top: calc(var(--leading) - var(--half)); }
+.member { align-self: start; cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.member:hover { border-color: var(--color-accent); box-shadow: var(--shadow-sm); }
+.member:has(.m-more[open]) { grid-column: span 2; display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); align-items: stretch; }
+.member:has(.m-more[open]) .m-photo { border-bottom: 0; border-right: 1px solid var(--color-divider); }
+.member:has(.m-more[open]) .m-photo image-slot { aspect-ratio: auto; height: 100%; min-height: 250px; }
+@media (max-width: 640px) {
+  .member:has(.m-more[open]) { grid-column: auto; display: block; }
+  .member:has(.m-more[open]) .m-photo { border-right: 0; border-bottom: 1px solid var(--color-divider); }
+  .member:has(.m-more[open]) .m-photo image-slot { aspect-ratio: 1 / 1; height: auto; min-height: 0; }
+}
+.m-photo { border-bottom: 1px solid var(--color-divider); }
+.m-photo image-slot { display: block; width: 100%; aspect-ratio: 1 / 1; }
+.m-body { padding: calc(var(--leading) - var(--half)) var(--leading) var(--leading); }
+.m-body h3 { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 21px; line-height: var(--leading); letter-spacing: 0.02em; text-transform: uppercase;
+  margin: var(--half) 0 0; }
+.m-role { display: block; font-size: 12px; line-height: 16px; letter-spacing: 0.08em;
+  text-transform: uppercase; font-weight: 600; color: var(--color-accent-700);
+  margin-top: 4px; }
+.m-about { font-size: 17px; line-height: var(--leading); margin: var(--half) 0 0;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent); }
+.m-label { display: block; font-size: 11px; line-height: 16px; letter-spacing: 0.1em;
+  text-transform: uppercase; font-weight: 600;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  margin: var(--leading) 0 0; }
+.m-skills { list-style: none; margin: 6px 0 0; padding: 0; }
+.m-skills li { position: relative; font-size: 16.5px; line-height: var(--leading);
+  padding: 2px 0 2px 16px; }
+.m-skills li::before { content: ""; position: absolute; left: 0; top: 12px;
+  width: 5px; height: 5px; background: var(--color-accent); }
+.m-foot { display: flex; justify-content: space-between; align-items: baseline; gap: var(--half);
+  border-top: 1px solid var(--color-divider);
+  margin-top: var(--leading); padding-top: var(--half);
+  font-size: 13px; line-height: 20px; }
+.m-foot .links { display: flex; gap: var(--leading); }
+.m-foot .deg { color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  font-feature-settings: "tnum" 1; letter-spacing: 0.04em; }
+.m-foot a { font-weight: 600; letter-spacing: 0.04em; text-decoration: none; }
+.m-foot a:hover { text-decoration: underline; }
+/* expandable card */
+.m-more { margin-top: var(--half); }
+.m-more > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: baseline; gap: 6px;
+  font-size: 12px; line-height: 20px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
+  color: var(--color-accent-700); }
+.m-more > summary::-webkit-details-marker { display: none; }
+.m-more > summary::after { content: "+"; font-weight: 600; }
+.m-more[open] > summary::after { content: "−"; }
+.m-more > summary:hover { color: var(--color-accent-900); }
+.m-more > summary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.m-more > summary .less { display: none; }
+.m-more[open] > summary .more { display: none; }
+.m-more[open] > summary .less { display: inline; }
+
+/* — timeline — */
+.timeline { list-style: none; margin: calc(var(--leading) * 1.5) 0 0; padding: 0; }
+.timeline li { display: grid; grid-template-columns: minmax(150px, 210px) 1fr;
+  column-gap: var(--leading); padding: var(--half) 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent); }
+.timeline li:first-child { border-top: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent); }
+.t-when { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 18px; line-height: var(--leading); letter-spacing: 0.02em;
+  text-transform: uppercase; font-feature-settings: "tnum" 1; }
+.timeline h4 { font-size: 18px; line-height: var(--leading); font-weight: 600; margin: 0; }
+.timeline p { font-size: 17px; line-height: var(--leading); margin: 2px 0 0;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent); }
+@media (max-width: 640px) {
+  .timeline li { grid-template-columns: 1fr; row-gap: 2px; }
+}
+
+/* — skills matrix — */
+.table-scroll { overflow-x: auto; margin-top: calc(var(--leading) - var(--half)); }
+.matrix { min-width: 560px; }
+.matrix th { font-size: 13px; letter-spacing: 0.08em; }
+.matrix td { font-size: 17px; line-height: var(--leading); vertical-align: top; padding-top: var(--half); padding-bottom: var(--half); }
+.matrix .d-domain { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 18px; line-height: var(--leading); letter-spacing: 0.02em; text-transform: uppercase;
+  white-space: nowrap; }
+
+/* — close + footer — */
+.close { padding: calc(2.5 * var(--leading)) 0 calc(2 * var(--leading)); }
+.close h3 { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 32px; line-height: calc(1.5 * var(--leading)); letter-spacing: 0.02em; text-transform: uppercase;
+  margin: 0; text-box: trim-both cap alphabetic; }
+.close .sub { font-size: 18px; line-height: var(--leading);
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+  margin: calc(var(--leading) - 1cap) 0 0; max-width: var(--measure); text-box: trim-both cap alphabetic; }
+footer { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: calc(2 * var(--leading));
+  padding: calc(2 * var(--leading)) 0; border-top: 1px solid var(--color-divider);
+  margin-top: calc(2 * var(--leading));
+  font-size: 17px; line-height: var(--leading);
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+footer h4 { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 18px; line-height: var(--leading); letter-spacing: 0.02em; text-transform: uppercase;
+  margin: 0 0 4px; color: var(--color-text); }
+footer .f-sub { display: block; font-size: 12px; line-height: 16px; letter-spacing: 0.08em;
+  text-transform: uppercase; font-weight: 600; color: var(--color-accent-700);
+  margin: 0 0 var(--half); }
+footer p { margin: 0; max-width: 48ch; }
+@media (max-width: 640px) { footer { grid-template-columns: 1fr; } }
+
+/* — responsive collapse — */
+@media (max-width: 880px) {
+  .cells, .cells.two { grid-template-columns: 1fr; gap: calc(var(--leading) + 16px); }
+}
+@media (max-width: 720px) {
+  .hero { padding-top: calc(2.5 * var(--leading)); }
+  .title-block > .tb-cell { padding-inline: var(--half); flex: 1 0 auto; }
+  .spec thead { position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip-path: inset(50%); white-space: nowrap; }
+  .spec, .spec tbody, .spec td { display: block; }
+  .spec tr { display: grid; grid-template-columns: max-content 1fr;
+    column-gap: var(--half); row-gap: var(--half); align-items: baseline;
+    padding: var(--leading);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent); }
+  .spec tr:last-child { border-bottom: 0; }
+  .spec th, .spec td { padding: 0; border: 0; }
+  .spec th:first-child, .spec td:first-child { padding-left: 0; }
+  .spec .s-num { grid-column: 1; }
+  .spec .s-prop { grid-column: 2; }
+  .spec .s-val, .spec .s-rem { grid-column: 1 / -1; }
+  .spec .s-blank { display: none; }
+}
+
+/* Review aid: 24px rhythm overlay — ?baselines or the B key. */
+body[data-baselines] { position: relative; }
+body[data-baselines]::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom,
+      color-mix(in srgb, var(--color-accent) 35%, transparent) 0 1px,
+      transparent 1px var(--leading)),
+    repeating-linear-gradient(to bottom,
+      transparent 0 var(--half),
+      color-mix(in srgb, var(--color-accent) 16%, transparent) var(--half) calc(var(--half) + 1px),
+      transparent calc(var(--half) + 1px) var(--leading));
+}
+</style>
+</head>
+<body>
+<nav class="nav" data-screen-label="Nav">
+  <span class="nav-brand">StackCollectives</span>
+  <a href="#why">Why us</a>
+  <a href="#partners">Partners</a>
+  <a href="#team">Team</a>
+  <a href="#programme">Programme</a>
+  <a href="#skills">Skills</a>
+  <a class="btn btn-primary" href="#contact">Contact us</a>
+</nav>
+<div class="wrap">
+
+  <section class="hero" data-screen-label="Hero">
+    <h1 class="display"><span class="line">Built to work.</span> <span class="line">Made to matter.</span></h1>
+    <p class="sub">We&rsquo;re seven SUTD engineers who take your problem personally.
+    From first sketch to production-ready build, we&rsquo;re with you every step of the way.</p>
+  </section>
+
+  <section class="section" id="why" data-screen-label="Why partner">
+    <span class="kicker">02 · Why partner with us</span>
+    <hr class="caption-rule" />
+    <div class="cells">
+      <div class="cell-frame">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <h3>The whole stack in-house</h3>
+        <ul class="points">
+          <li>CAD, fabrication &amp; mechanical design</li>
+          <li>PCB, embedded &amp; firmware</li>
+          <li>Full-stack software &amp; machine learning</li>
+        </ul>
+      </div>
+      <div class="cell-frame">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <h3>Grounded in real experience</h3>
+        <ul class="points">
+          <li>6 industry attachments served — A*STAR, Xilinx, Griffin Labs, HTX, Certis, Changi Airport</li>
+          <li>5 of 7 members hold engineering diplomas from before SUTD</li>
+          <li>Real client work delivered, incl. a filed SG provisional patent</li>
+        </ul>
+      </div>
+      <div class="cell-frame">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <h3>Delivering real impact</h3>
+        <ul class="points">
+          <li>Discovery first — we immerse in your users&rsquo; world to understand the whys</li>
+          <li>Build fast, test faster, refine well</li>
+          <li>All to deliver a production-ready solution</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="partners" data-screen-label="Our partners">
+    <span class="kicker">03 · Our partners</span>
+    <hr class="caption-rule" />
+    <div class="cells two">
+      <div class="cell-frame">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <h3>HERMES</h3>
+        <span class="meta">2026 · with Ento Industries</span>
+        <p>An automated counter for Black Soldier Fly neonates: deformable funnel, vibration-tuned ramp and an event-camera vision pipeline. 98.6% counting accuracy with 100% neonate survival, at S$1,120 a unit — under 1% of the commercial alternative.</p>
+      </div>
+      <div class="cell-frame">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <h3>InVest</h3>
+        <span class="meta">2026 · 3D design project</span>
+        <p>A smart navigation vest for the visually impaired: an ESP32-CAM captures bus numbers, an OCR pipeline reads them over wireless, and vibration motors steer the wearer and flag arrivals.</p>
+      </div>
+      <div class="cell-frame">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <h3>SensOri</h3>
+        <span class="meta">2026 · 3D design project</span>
+        <p>A sensing system that lets caregivers plan outings with confidence — an ESP32 with radar, sound and light sensors monitoring crowd density, noise and glare in real time.</p>
+      </div>
+      <div class="cell-frame">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <h3>ADL Data Acquisition</h3>
+        <span class="meta">2021–22 · TP major project</span>
+        <p>Computer-vision capture of activities of daily living for objective patient monitoring, built on OpenCV, Pygame and SQLite. Filed as SG provisional patent 10202105829Q.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="team" data-screen-label="The team">
+    <span class="kicker">04 · The team</span>
+    <hr class="caption-rule" />
+    <p class="tagline">Meet the faces that don&rsquo;t do half-measures.</p>
+    <div class="members">
+
+      <article class="member">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="m-photo duotone"><image-slot id="hs-justin" shape="rect" src="assets/team/justin.webp" role="img" aria-label="Justin Teh"></image-slot></div>
+        <div class="m-body">
+          <h3>Justin Teh</h3>
+          <span class="m-role">Software &amp; Systems Lead</span>
+          <details class="m-more">
+            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+            <p class="m-about">Builds where software, analytics and systems thinking meet — full-stack apps, IoT pipelines and a provisionally patented patient-monitoring project. First point of contact for partners.</p>
+            <span class="m-label">Key skills</span>
+            <ul class="m-skills">
+              <li>Python · C++ (Arduino/ESP32) · Java</li>
+              <li>Full-stack ASP.NET MVC · HTML/CSS/JS · MQTT IoT</li>
+              <li>OpenCV · KNIME · Seaborn · Matplotlib</li>
+              <li>Fusion 360 · 3D printing</li>
+            </ul>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/teh-nian-hong-justin/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Justin_Teh_Resume.docx" download>Resume ↓</a></span><span class="deg">CSD ’28</span></div>
+          </details>
+        </div>
+      </article>
+
+      <article class="member">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="m-photo duotone"><image-slot id="hs-owen" shape="rect" src="assets/team/owen.webp" role="img" aria-label="Owen Yeo"></image-slot></div>
+        <div class="m-body">
+          <h3>Owen Yeo</h3>
+          <span class="m-role">AI &amp; Machine Learning</span>
+          <details class="m-more">
+            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+            <p class="m-about">Does the unglamorous work that makes AI dependable — evaluation workflows for vision-language-action models, dataset curation, and the scripts that catch errors before demos do.</p>
+            <span class="m-label">Key skills</span>
+            <ul class="m-skills">
+              <li>Python · Java · C# · VBA</li>
+              <li>VLA model evaluation · dataset pipelines · trajectory analysis</li>
+              <li>Git · Hugging Face Hub · Excel automation</li>
+              <li>Semiconductor test ops (cleanroom, Xilinx)</li>
+            </ul>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/owen-yeo-562076203/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Owen_Yeo_Resume.docx" download>Resume ↓</a></span><span class="deg">CSD ’28</span></div>
+          </details>
+        </div>
+      </article>
+
+      <article class="member">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="m-photo duotone"><image-slot id="hs-yida" shape="rect" src="assets/team/yida.webp" role="img" aria-label="Puah Yi Da"></image-slot></div>
+        <div class="m-body">
+          <h3>Puah Yi Da</h3>
+          <span class="m-role">Mechanical Design &amp; ML</span>
+          <details class="m-more">
+            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+            <p class="m-about">Takes products from CAD to tested prototype — and placed first in cohort in a three-task Kaggle ML challenge along the way. Exploring AI-assisted design workflows.</p>
+            <span class="m-label">Key skills</span>
+            <ul class="m-skills">
+              <li>Fusion 360 · 3D printing · test-and-iterate loops</li>
+              <li>Python · MATLAB</li>
+              <li>XGBoost · LightGBM · CatBoost · feature engineering</li>
+              <li>Event-based vision (OpenMV blob tracking)</li>
+            </ul>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/yi-da-puah/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Yi_Da_Puah_CV.pdf" download>Resume ↓</a></span><span class="deg">EPD ’28</span></div>
+          </details>
+        </div>
+      </article>
+
+      <article class="member">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="m-photo duotone"><image-slot id="hs-ryan" shape="rect" placeholder="Drop Ryan’s headshot here" role="img" aria-label="Lim Ryan Ryutaro — photo pending"></image-slot></div>
+        <div class="m-body">
+          <h3>Lim Ryan Ryutaro</h3>
+          <span class="m-role">Embedded &amp; PCB Design</span>
+          <details class="m-more">
+            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+            <p class="m-about">Happiest at the bench: drawing a board, milling it, soldering it, then writing the firmware. Kept ~1,000 RSAF aircraft missions launching as a dedicated crew chief.</p>
+            <span class="m-label">Key skills</span>
+            <ul class="m-skills">
+              <li>EAGLE · KiCAD · LPKF PCB milling</li>
+              <li>STM32 · PIC · ESP32 · Arduino · Raspberry Pi</li>
+              <li>C · C++ · Python</li>
+              <li>Illustrator · CorelDraw · Fusion</li>
+            </ul>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/lim-ryan-ryutaro/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Ryan_Lim_Resume.pdf" download>Resume ↓</a></span><span class="deg">EPD ’28</span></div>
+          </details>
+        </div>
+      </article>
+
+      <article class="member">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="m-photo duotone"><image-slot id="hs-phelia" shape="rect" src="assets/team/phelia.webp" role="img" aria-label="Phelia Hoe"></image-slot></div>
+        <div class="m-body">
+          <h3>Phelia Hoe</h3>
+          <span class="m-role">Electrical &amp; Project Ops</span>
+          <details class="m-more">
+            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+            <p class="m-about">A coach and organiser by habit — worked airport operations at Changi, runs project logistics and communications for the team, and solders her own prototypes.</p>
+            <span class="m-label">Key skills</span>
+            <ul class="m-skills">
+              <li>Electronics · prototyping · fabrication</li>
+              <li>ESP32 sensing (radar · sound · light)</li>
+              <li>Project management · client-facing operations</li>
+              <li>Aerospace systems &amp; maintenance (NYP)</li>
+            </ul>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/phelia-hoe/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Phelia_Hoe_Resume.pdf" download>Resume ↓</a></span><span class="deg">EPD ’28</span></div>
+          </details>
+        </div>
+      </article>
+
+      <article class="member">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="m-photo duotone"><image-slot id="hs-benedict" shape="rect" src="assets/team/benedict.webp" role="img" aria-label="Benedict Antoni"></image-slot></div>
+        <div class="m-body">
+          <h3>Benedict Antoni</h3>
+          <span class="m-role">Research &amp; Fabrication</span>
+          <details class="m-more">
+            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+            <p class="m-about">Splits his time between research and the machine shop — UROP work on photonic computing and composite fabrication, and a robotics diploma that came with the Festo Gold Medal.</p>
+            <span class="m-label">Key skills</span>
+            <ul class="m-skills">
+              <li>SolidWorks · Inventor · Fusion 360</li>
+              <li>CNC milling &amp; lathe · FDM/SLA printing</li>
+              <li>Microcontrollers · PCB soldering</li>
+              <li>Python · C · 200-test research campaigns</li>
+            </ul>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/benedict-julian-danandjaja-antoni-4236973b7/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Benedict_Antoni_CV.pdf" download>Resume ↓</a></span><span class="deg">EPD ’28</span></div>
+          </details>
+        </div>
+      </article>
+
+      <article class="member">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="m-photo duotone"><image-slot id="hs-edric" shape="rect" src="assets/team/edric.webp" role="img" aria-label="Edric Lum"></image-slot></div>
+        <div class="m-body">
+          <h3>Edric Lum</h3>
+          <span class="m-role">Robotics Software</span>
+          <details class="m-more">
+            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+            <p class="m-about">Interned on the software side of T1, a VLA-powered dual-arm mobile robot, before joining the collective. His LinkedIn carries the current picture; full CV to follow.</p>
+            <span class="m-label">Key skills</span>
+            <ul class="m-skills">
+              <li>Robotics software — dual-arm mobile manipulation (T1)</li>
+              <li>Full profile on LinkedIn · CV pending</li>
+            </ul>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/edric-lum-yu-wei/" target="_blank" rel="noopener">LinkedIn ↗</a></span><span class="deg">SUTD ’28</span></div>
+          </details>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="section" id="programme" data-screen-label="The programme">
+    <span class="kicker">05 · Working with us</span>
+    <hr class="caption-rule" />
+    <div class="plate">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <header class="title-block">
+        <span class="tb-cell">CAP-27</span>
+        <span class="tb-cell">Rev B</span>
+        <span class="tb-cell">Sheet 01 of 01</span>
+      </header>
+      <table class="table spec">
+        <colgroup><col class="c-num"><col class="c-prop"><col class="c-val"><col class="c-rem"></colgroup>
+        <thead>
+          <tr><th scope="col">No.</th><th scope="col">Property</th><th scope="col">Value</th><th scope="col">Remark</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="s-num">01</td><td class="s-prop">SUTD project resources</td><td class="s-val">≤ S$4,000</td><td class="s-rem">University-funded resources to build a meaningful project for your company</td></tr>
+          <tr><td class="s-num">02</td><td class="s-prop">IP &amp; generated materials</td><td class="s-val">Yours</td><td class="s-rem">All IP belongs to the partner organisation</td></tr>
+          <tr><td class="s-num">03</td><td class="s-prop">Committed window</td><td class="s-val">2 terms</td><td class="s-rem">Term 7 + Term 8, September 2027 – April 2028</td></tr>
+        </tbody>
+      </table>
+      <p class="sheet-note">We are open to site visits, employee interviews, learning required specialised software to better understand and facilitate the project curation!<br />Programme queries: <a href="mailto:capstone@sutd.edu.sg">capstone@sutd.edu.sg</a>.</p>
+    </div>
+
+    <ol class="timeline">
+      <li>
+        <span class="t-when">Now – Jan 2027</span>
+        <div><h4>Sourcing &amp; introductions</h4>
+        <p>We connect you with SUTD&rsquo;s Capstone Office by 29 January 2027; the company confirms agreement clauses and UEN by email.</p></div>
+      </li>
+      <li>
+        <span class="t-when">By 28 Feb 2027</span>
+        <div><h4>Project Form submitted</h4>
+        <p>Team and company complete the Project Form together — contract review typically needs at least a month before this date.</p></div>
+      </li>
+      <li>
+        <span class="t-when">Feb – Mar 2027</span>
+        <div><h4>Discussion session</h4>
+        <p>The Capstone Committee assesses project suitability; the initiating students and the company mentor attend.</p></div>
+      </li>
+      <li>
+        <span class="t-when">Apr – Jun 2027</span>
+        <div><h4>Agreement signed</h4>
+        <p>SUTD and the company sign the collaboration agreement — the project is approved once both signatures land.</p></div>
+      </li>
+      <li>
+        <span class="t-when">Sep 2027 – Apr 2028</span>
+        <div><h4>The build</h4>
+        <p>Two full terms on your problem, with design reviews along the way and a working deliverable at the end.</p></div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="section" id="skills" data-screen-label="Skills matrix">
+    <span class="kicker">06 · Our team at a glance</span>
+    <hr class="caption-rule" />
+    <div class="table-scroll">
+      <table class="table matrix">
+        <thead>
+          <tr><th scope="col">Domain</th><th scope="col">Tools &amp; methods</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="d-domain">Mechanical &amp; CAD</td><td>SolidWorks · Fusion 360 · Autodesk Inventor · Rhino</td></tr>
+          <tr><td class="d-domain">Electronics &amp; PCB</td><td>EAGLE · KiCAD · LPKF milling · soldering · lab instrumentation</td></tr>
+          <tr><td class="d-domain">Embedded &amp; firmware</td><td>C/C++ · STM32 · ESP32 · Arduino · PIC · Raspberry Pi</td></tr>
+          <tr><td class="d-domain">Software &amp; web</td><td>Python · Java · ASP.NET MVC · HTML/CSS/JS · MQTT · Git</td></tr>
+          <tr><td class="d-domain">Data &amp; machine learning</td><td>XGBoost/LightGBM/CatBoost · OpenCV/OpenMV · VLA evaluation · KNIME</td></tr>
+          <tr><td class="d-domain">Fabrication &amp; testing</td><td>3D printing (FDM/SLA) · CNC mill &amp; lathe · structured test campaigns</td></tr>
+          <tr><td class="d-domain">Project ops</td><td>Design reviews (SRR/SDR/PDR) · logistics · client communications</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="close" id="contact" data-screen-label="Contact">
+    <span class="kicker">07 · Get in touch</span>
+    <hr class="caption-rule" />
+    <h3>Ready to solve your biggest challenges?</h3>
+    <p class="sub">We&rsquo;re excited to hear about your problem statements or projects and explore how we can collaborate to bring your vision to life.</p>
+    <div class="row">
+      <a class="btn btn-primary" href="mailto:tnh.justin@gmail.com?cc=1009252@mymail.sutd.edu.sg&subject=SUTD%20Capstone%202027%20x%20StackCollectives">Partner with us</a>
+      <a class="btn btn-ghost" href="assets/StackCollectives_Capstone_Outreach.pdf" download>Download Capstone Info PDF</a>
+    </div>
+    <footer>
+      <div>
+        <h4>StackCollectives</h4>
+        <span class="f-sub">SUTD Capstone 2028</span>
+        <p>Part of Singapore University of Technology and Design&rsquo;s Capstone program, we&rsquo;re a multidisciplinary team tackling real-world problems. For more information about SUTD Capstone, visit <a href="https://www.sutd.edu.sg/education/undergraduate/capstone/overview" target="_blank" rel="noopener">here</a>.</p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p>Justin | <a href="mailto:tnh.justin@gmail.com?cc=1009252@mymail.sutd.edu.sg">tnh.justin@gmail.com</a></p>
+      </div>
+    </footer>
+  </section>
+
+</div>
+<script src="image-slot.js"></script>
+<script>
+// Review aid: baseline-grid overlay — ?baselines in the URL, or press B.
+(() => {
+  if (new URLSearchParams(location.search).has('baselines')) document.body.setAttribute('data-baselines', '');
+  addEventListener('keydown', (e) => {
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    if ((e.key === 'b' || e.key === 'B') && !e.metaKey && !e.ctrlKey && !e.altKey) document.body.toggleAttribute('data-baselines');
+  });
+})();
+</script>
+<script>
+// Member cards: whole-card toggle + FLIP shuffle so the grid reflows smoothly.
+(() => {
+  const grid = document.querySelector('.members');
+  if (!grid) return;
+  const cards = [...grid.querySelectorAll('.member')];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const flip = (mutate) => {
+    if (reduced) { mutate(); return; }
+    const first = new Map(cards.map((c) => [c, c.getBoundingClientRect()]));
+    mutate();
+    cards.forEach((c) => {
+      const f = first.get(c), l = c.getBoundingClientRect();
+      const dx = f.left - l.left, dy = f.top - l.top;
+      if (dx || dy) c.animate(
+        [{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }],
+        { duration: 320, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)' });
+    });
+  };
+  cards.forEach((card, i) => {
+    card.style.order = i * 2;
+    const details = card.querySelector('.m-more');
+    if (!details) return;
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
+      e.preventDefault();
+      flip(() => {
+        const opening = !details.open;
+        details.open = opening;
+        if (opening) {
+          // Shift the expanded card to the left-most slot of its current row.
+          const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+          const rowStart = Math.floor(i / cols) * cols;
+          card.style.order = rowStart * 2 - 1;
+        } else {
+          card.style.order = i * 2;
+        }
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
