@@ -66,13 +66,13 @@ a.btn { text-decoration: none; }
 .close .row { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--leading); }
 
 /* — registration crosses shared by every framed object — */
-.plate, .cell-frame, .member, .member-ghost, .loader-frame { position: relative; border: 1px solid var(--color-divider); }
-:is(.plate, .cell-frame, .member, .member-ghost, .loader-frame) > .corner {
+.plate, .cell-frame, .member, .loader-frame { position: relative; border: 1px solid var(--color-divider); }
+:is(.plate, .cell-frame, .member, .loader-frame) > .corner {
   position: absolute; width: 15px; height: 15px;
   color: color-mix(in srgb, var(--color-text) 55%, transparent); pointer-events: none; }
-:is(.plate, .cell-frame, .member, .member-ghost, .loader-frame) > .corner::before {
+:is(.plate, .cell-frame, .member, .loader-frame) > .corner::before {
   content: ""; position: absolute; left: 7px; top: 0; width: 1px; height: 100%; background: currentColor; }
-:is(.plate, .cell-frame, .member, .member-ghost, .loader-frame) > .corner::after {
+:is(.plate, .cell-frame, .member, .loader-frame) > .corner::after {
   content: ""; position: absolute; top: 7px; left: 0; width: 100%; height: 1px; background: currentColor; }
 .corner.tl { top: -8px; left: -8px; }
 .corner.tr { top: -8px; right: -8px; }
@@ -134,23 +134,45 @@ a.btn { text-decoration: none; }
 .points li::before { content: ""; position: absolute; left: 0; top: 13px;
   width: 6px; height: 6px; background: var(--color-accent); }
 
-/* — member cards — */
-.members { position: relative; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  align-content: start; gap: clamp(24px, 2.5vw, 36px); margin-top: calc(var(--leading) - var(--half)); }
-.member { align-self: start; cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease; }
-.member:hover { border-color: var(--color-accent); box-shadow: var(--shadow-sm); }
-.member:has(.m-more[open]) { grid-column: span 2; display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); align-items: stretch; }
-.member:has(.m-more[open]) .m-photo { border-bottom: 0; border-right: 1px solid var(--color-divider); }
-.member:has(.m-more[open]) .m-photo :is(img, .m-ph) { aspect-ratio: auto; height: 100%; min-height: 250px; }
+/* — the team: a row of portrait bubbles; each opens its member card in the
+   stage below. Without JS the bubbles are anchor links and every card shows. — */
+.team { position: relative; margin-top: calc(var(--leading) - var(--half)); }
+.bubbles { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: clamp(8px, 2vw, 32px); list-style: none; margin: 0; padding: 0; }
+.bubble { display: flex; flex-direction: column; align-items: center; gap: var(--half);
+  color: var(--color-text); text-decoration: none; }
+.bubble img { width: min(100%, 112px); height: auto; aspect-ratio: 1 / 1; border-radius: 50%; object-fit: cover;
+  border: 1px solid var(--color-divider); outline: 1px solid transparent; outline-offset: 4px;
+  transition: outline-color 0.2s ease, translate 0.25s ease; }
+.bubble:hover img { outline-color: var(--color-divider); translate: 0 -3px; }
+.bubble.is-active img { outline: 2px solid var(--color-accent); }
+.bubble:focus-visible { outline: none; }
+.bubble:focus-visible img { outline: 2px solid var(--color-accent); }
+.b-name { font-size: 12px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 600; white-space: nowrap; transition: color 0.2s ease;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+.bubble:hover .b-name, .bubble.is-active .b-name { color: var(--color-accent-700); }
 @media (max-width: 640px) {
-  .member:has(.m-more[open]) { grid-column: auto; display: block; }
-  .member:has(.m-more[open]) .m-photo { border-right: 0; border-bottom: 1px solid var(--color-divider); }
-  .member:has(.m-more[open]) .m-photo :is(img, .m-ph) { aspect-ratio: 1 / 1; height: auto; min-height: 0; }
+  .b-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 }
-.m-photo { border-bottom: 1px solid var(--color-divider); }
-.m-photo :is(img, .m-ph) { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; box-sizing: border-box; }
+.stage { display: grid; justify-items: center; gap: calc(var(--leading) + 16px);
+  margin-top: calc(1.5 * var(--leading)); }
+.stage-hint { margin: 0; font-size: 13px; line-height: 20px; letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+/* the portrait that flies between a bubble and its card while one opens or closes */
+.portrait-flight { position: absolute; z-index: 2; margin: 0; max-width: none; object-fit: cover; pointer-events: none; }
+
+/* — member card — */
+.member { width: min(100%, 800px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  scroll-margin: 80px 0 var(--leading); }
+.member[hidden] { display: none; }
+.m-photo { border-right: 1px solid var(--color-divider); }
+.m-photo img { display: block; width: 100%; height: 100%; min-height: 300px; object-fit: cover; }
+@media (max-width: 640px) {
+  .member { grid-template-columns: 1fr; }
+  .m-photo { border-right: 0; border-bottom: 1px solid var(--color-divider); }
+  .m-photo img { height: auto; min-height: 0; aspect-ratio: 1 / 1; }
+}
 .m-body { padding: calc(var(--leading) - var(--half)) var(--leading) var(--leading); }
 .m-body h3 { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
   font-size: 21px; line-height: var(--leading); letter-spacing: 0.02em; text-transform: uppercase;
@@ -158,6 +180,13 @@ a.btn { text-decoration: none; }
 .m-role { display: block; font-size: 12px; line-height: 16px; letter-spacing: 0.08em;
   text-transform: uppercase; font-weight: 600; color: var(--color-accent-700);
   margin-top: 4px; }
+.m-close { display: none; align-items: baseline; gap: 6px; margin-top: var(--half);
+  padding: 0; border: 0; background: none; font: inherit; cursor: pointer;
+  font-size: 12px; line-height: 20px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
+  color: var(--color-accent-700); }
+.team.is-live .m-close { display: inline-flex; }
+.m-close:hover { color: var(--color-accent-900); }
+.m-close:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 .m-about { font-size: 17px; line-height: var(--leading); margin: var(--half) 0 0;
   color: color-mix(in srgb, var(--color-text) 78%, transparent); }
 .m-label { display: block; font-size: 11px; line-height: 16px; letter-spacing: 0.1em;
@@ -174,27 +203,11 @@ a.btn { text-decoration: none; }
   margin-top: var(--leading); padding-top: var(--half);
   font-size: 13px; line-height: 20px; }
 .m-foot .links { display: flex; gap: var(--leading); }
-.m-foot .deg { color: color-mix(in srgb, var(--color-text) 70%, transparent);
-  font-feature-settings: "tnum" 1; letter-spacing: 0.04em; }
 .m-foot a { font-weight: 600; letter-spacing: 0.04em; text-decoration: none; }
 .m-foot a:hover { text-decoration: underline; }
-/* expandable card */
-.m-more { margin-top: var(--half); }
-.m-more > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: baseline; gap: 6px;
-  font-size: 12px; line-height: 20px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
-  color: var(--color-accent-700); }
-.m-more > summary::-webkit-details-marker { display: none; }
-.m-more > summary::after { content: "+"; font-weight: 600; }
-.m-more[open] > summary::after { content: "−"; }
-.m-more > summary:hover { color: var(--color-accent-900); }
-.m-more > summary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-.m-more > summary .less { display: none; }
-.m-more[open] > summary .more { display: none; }
-.m-more[open] > summary .less { display: inline; }
-/* stand-in frame the member-card script resizes between slots while a card's
-   content is faded out */
-.member-ghost { position: absolute; margin: 0; pointer-events: none; }
-.member-ghost.is-hovered { border-color: var(--color-accent); box-shadow: var(--shadow-sm); }
+.m-foot .deg { font-weight: 400; font-feature-settings: "tnum" 1; white-space: nowrap;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+.m-foot .deg:hover { color: var(--color-accent-700); }
 
 /* — timeline — */
 .timeline { list-style: none; margin: calc(var(--leading) * 1.5) 0 0; padding: 0; }
@@ -494,16 +507,26 @@ footer p { margin: 0; max-width: 48ch; }
     <span class="kicker">04 · The team</span>
     <hr class="caption-rule">
     <p class="tagline">Meet the faces that don’t do half-measures.</p>
-    <div class="members">
+    <div class="team">
+      <ul class="bubbles">
+        <li><a class="bubble" href="#member-justin" aria-controls="member-justin" aria-expanded="false"><img src="assets/team/justin.webp" alt="" width="112" height="112"><span class="b-name">Justin</span></a></li>
+        <li><a class="bubble" href="#member-owen" aria-controls="member-owen" aria-expanded="false"><img src="assets/team/owen.webp" alt="" width="112" height="112"><span class="b-name">Owen</span></a></li>
+        <li><a class="bubble" href="#member-yida" aria-controls="member-yida" aria-expanded="false"><img src="assets/team/yida.webp" alt="" width="112" height="112"><span class="b-name">Yi Da</span></a></li>
+        <li><a class="bubble" href="#member-ryan" aria-controls="member-ryan" aria-expanded="false"><img src="assets/team/ryan.webp" alt="" width="112" height="112"><span class="b-name">Ryan</span></a></li>
+        <li><a class="bubble" href="#member-phelia" aria-controls="member-phelia" aria-expanded="false"><img src="assets/team/phelia.webp" alt="" width="112" height="112"><span class="b-name">Phelia</span></a></li>
+        <li><a class="bubble" href="#member-benedict" aria-controls="member-benedict" aria-expanded="false"><img src="assets/team/benedict.webp" alt="" width="112" height="112"><span class="b-name">Benedict</span></a></li>
+        <li><a class="bubble" href="#member-edric" aria-controls="member-edric" aria-expanded="false"><img src="assets/team/edric.webp" alt="" width="112" height="112"><span class="b-name">Edric</span></a></li>
+      </ul>
+      <div class="stage">
+        <p class="stage-hint" hidden>Select a portrait to read that member’s profile.</p>
 
-      <article class="member">
-        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-        <div class="m-photo"><img src="assets/team/justin.webp" alt="Justin Teh"></div>
-        <div class="m-body">
-          <h3>Justin Teh</h3>
-          <span class="m-role">Software &amp; Systems Lead</span>
-          <details class="m-more">
-            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+        <article class="member" id="member-justin" aria-labelledby="member-justin-name">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="m-photo"><img src="assets/team/justin.webp" alt="Justin Teh"></div>
+          <div class="m-body">
+            <h3 id="member-justin-name">Justin Teh</h3>
+            <span class="m-role">Software &amp; Systems Lead</span>
+            <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
             <p class="m-about">Works on software that connects to hardware and data. Built an ASP.NET and MQTT web app for IoT devices at A*STAR’s Institute of Microelectronics, and a computer-vision system for tracking patients’ daily activities that was filed as a Singapore provisional patent. First point of contact for partners.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
@@ -512,19 +535,17 @@ footer p { margin: 0; max-width: 48ch; }
               <li>OpenCV · KNIME · Seaborn · Matplotlib</li>
               <li>Fusion 360 · 3D printing · Through-hole soldering</li>
             </ul>
-            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/teh-nian-hong-justin/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Justin_Teh_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><span class="deg">CSD ’28</span></div>
-          </details>
-        </div>
-      </article>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/teh-nian-hong-justin/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Justin_Teh_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><a class="deg" href="https://www.sutd.edu.sg/wp-content/uploads/2024/10/CSD.pdf" target="_blank" rel="noopener" aria-label="Computer Science and Design (CSD) curriculum, class of 2028">CSD ’28 ↗</a></div>
+          </div>
+        </article>
 
-      <article class="member">
-        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-        <div class="m-photo"><img src="assets/team/owen.webp" alt="Owen Yeo"></div>
-        <div class="m-body">
-          <h3>Owen Yeo</h3>
-          <span class="m-role">AI &amp; Machine Learning</span>
-          <details class="m-more">
-            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+        <article class="member" id="member-owen" aria-labelledby="member-owen-name">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="m-photo"><img src="assets/team/owen.webp" alt="Owen Yeo"></div>
+          <div class="m-body">
+            <h3 id="member-owen-name">Owen Yeo</h3>
+            <span class="m-role">AI &amp; Machine Learning</span>
+            <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
             <p class="m-about">Builds evaluation and data tooling for robot AI. At Griffin Labs, designed test workflows for vision-language-action models and wrote dataset tools that cut down manual preprocessing. Before SUTD, automated wafer-test analysis at Xilinx.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
@@ -533,19 +554,17 @@ footer p { margin: 0; max-width: 48ch; }
               <li>Git · Hugging Face Hub · Excel automation</li>
               <li>Semiconductor test operations (cleanroom, Xilinx)</li>
             </ul>
-            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/owen-yeo-562076203/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Owen_Yeo_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><span class="deg">CSD ’28</span></div>
-          </details>
-        </div>
-      </article>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/owen-yeo-562076203/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Owen_Yeo_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><a class="deg" href="https://www.sutd.edu.sg/wp-content/uploads/2024/10/CSD.pdf" target="_blank" rel="noopener" aria-label="Computer Science and Design (CSD) curriculum, class of 2028">CSD ’28 ↗</a></div>
+          </div>
+        </article>
 
-      <article class="member">
-        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-        <div class="m-photo"><img src="assets/team/yida.webp" alt="Puah Yi Da"></div>
-        <div class="m-body">
-          <h3>Puah Yi Da</h3>
-          <span class="m-role">Mechanical Design &amp; ML</span>
-          <details class="m-more">
-            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+        <article class="member" id="member-yida" aria-labelledby="member-yida-name">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="m-photo"><img src="assets/team/yida.webp" alt="Puah Yi Da"></div>
+          <div class="m-body">
+            <h3 id="member-yida-name">Puah Yi Da</h3>
+            <span class="m-role">Mechanical Design &amp; ML</span>
+            <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
             <p class="m-about">Works across mechanical design, computer vision, and embedded systems: CAD, prototyping, ML-based algorithms, and hardware integration, refined through iterative testing from concept to working system.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
@@ -553,19 +572,17 @@ footer p { margin: 0; max-width: 48ch; }
               <li>Python · MATLAB</li>
               <li>Computer vision (ESP32, OpenMV event-based camera)</li>
             </ul>
-            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/yi-da-puah/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Yi_Da_Puah_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><span class="deg">EPD ’28</span></div>
-          </details>
-        </div>
-      </article>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/yi-da-puah/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Yi_Da_Puah_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><a class="deg" href="https://www.sutd.edu.sg/epd/education/undergraduate/curriculum/" target="_blank" rel="noopener" aria-label="Engineering Product Development (EPD) curriculum, class of 2028">EPD ’28 ↗</a></div>
+          </div>
+        </article>
 
-      <article class="member">
-        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-        <div class="m-photo"><img src="assets/team/ryan.webp" alt="Lim Ryan Ryutaro"></div>
-        <div class="m-body">
-          <h3>Lim Ryan Ryutaro</h3>
-          <span class="m-role">Embedded &amp; PCB Design</span>
-          <details class="m-more">
-            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+        <article class="member" id="member-ryan" aria-labelledby="member-ryan-name">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="m-photo"><img src="assets/team/ryan.webp" alt="Lim Ryan Ryutaro"></div>
+          <div class="m-body">
+            <h3 id="member-ryan-name">Lim Ryan Ryutaro</h3>
+            <span class="m-role">Embedded &amp; PCB Design</span>
+            <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
             <p class="m-about">Designs, mills and assembles PCBs, then writes the firmware that runs on them. At HTX, built PCBs for in-house autonomous drones at up to 50% lower cost. As an RSAF crew chief, led ground crew through about 1,000 aircraft missions.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
@@ -574,19 +591,17 @@ footer p { margin: 0; max-width: 48ch; }
               <li>C · C++ · Python</li>
               <li>Illustrator · CorelDRAW · Fusion 360</li>
             </ul>
-            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/lim-ryan-ryutaro/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Ryan_Lim_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><span class="deg">EPD ’28</span></div>
-          </details>
-        </div>
-      </article>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/lim-ryan-ryutaro/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Ryan_Lim_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><a class="deg" href="https://www.sutd.edu.sg/epd/education/undergraduate/curriculum/" target="_blank" rel="noopener" aria-label="Engineering Product Development (EPD) curriculum, class of 2028">EPD ’28 ↗</a></div>
+          </div>
+        </article>
 
-      <article class="member">
-        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-        <div class="m-photo"><img src="assets/team/phelia.webp" alt="Phelia Hoe"></div>
-        <div class="m-body">
-          <h3>Phelia Hoe</h3>
-          <span class="m-role">Electrical &amp; Project Ops</span>
-          <details class="m-more">
-            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+        <article class="member" id="member-phelia" aria-labelledby="member-phelia-name">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="m-photo"><img src="assets/team/phelia.webp" alt="Phelia Hoe"></div>
+          <div class="m-body">
+            <h3 id="member-phelia-name">Phelia Hoe</h3>
+            <span class="m-role">Electrical &amp; Project Ops</span>
+            <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
             <p class="m-about">A coach and organiser by nature, with experience in Changi Airport operations, project logistics and team communications, alongside hands-on prototyping and soldering.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
@@ -595,19 +610,17 @@ footer p { margin: 0; max-width: 48ch; }
               <li>Project management · Client-facing operations</li>
               <li>Aerospace Systems &amp; Management (NYP)</li>
             </ul>
-            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/phelia-hoe/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Phelia_Hoe_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><span class="deg">EPD ’28</span></div>
-          </details>
-        </div>
-      </article>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/phelia-hoe/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Phelia_Hoe_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><a class="deg" href="https://www.sutd.edu.sg/epd/education/undergraduate/curriculum/" target="_blank" rel="noopener" aria-label="Engineering Product Development (EPD) curriculum, class of 2028">EPD ’28 ↗</a></div>
+          </div>
+        </article>
 
-      <article class="member">
-        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-        <div class="m-photo"><img src="assets/team/benedict.webp" alt="Benedict Antoni"></div>
-        <div class="m-body">
-          <h3>Benedict Antoni</h3>
-          <span class="m-role">Research &amp; Fabrication</span>
-          <details class="m-more">
-            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+        <article class="member" id="member-benedict" aria-labelledby="member-benedict-name">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="m-photo"><img src="assets/team/benedict.webp" alt="Benedict Antoni"></div>
+          <div class="m-body">
+            <h3 id="member-benedict-name">Benedict Antoni</h3>
+            <span class="m-role">Research &amp; Fabrication</span>
+            <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
             <p class="m-about">Works between the research lab and the machine shop. Ran up to 200 plasma surface-treatment tests for a composite fabrication project under UROP, and graduated top of the NYP Robotics &amp; Mechatronics diploma with the Festo Gold Medal.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
@@ -616,19 +629,17 @@ footer p { margin: 0; max-width: 48ch; }
               <li>Microcontrollers · PCB soldering</li>
               <li>Python · C · Structured test campaigns</li>
             </ul>
-            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/benedict-julian-danandjaja-antoni-4236973b7/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Benedict_Antoni_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><span class="deg">EPD ’28</span></div>
-          </details>
-        </div>
-      </article>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/benedict-julian-danandjaja-antoni-4236973b7/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Benedict_Antoni_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><a class="deg" href="https://www.sutd.edu.sg/epd/education/undergraduate/curriculum/" target="_blank" rel="noopener" aria-label="Engineering Product Development (EPD) curriculum, class of 2028">EPD ’28 ↗</a></div>
+          </div>
+        </article>
 
-      <article class="member">
-        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-        <div class="m-photo"><img src="assets/team/edric.webp" alt="Edric Lum"></div>
-        <div class="m-body">
-          <h3>Edric Lum</h3>
-          <span class="m-role">Robotics &amp; Automation</span>
-          <details class="m-more">
-            <summary><span class="more">See more</span><span class="less">See less</span></summary>
+        <article class="member" id="member-edric" aria-labelledby="member-edric-name">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="m-photo"><img src="assets/team/edric.webp" alt="Edric Lum"></div>
+          <div class="m-body">
+            <h3 id="member-edric-name">Edric Lum</h3>
+            <span class="m-role">Robotics &amp; Automation</span>
+            <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
             <p class="m-about">Builds robot systems end to end, from wiring and E‑stop safety circuits to ROS2 software. At Griffin Labs, wrote the ROS2 odometry and control packages for the LionsBot T1, a dual-arm swerve-drive robot shortlisted for the Amsterdam Innovation Award at Interclean 2026. Also runs and troubleshoots a KUKA SCARA kitting cell at CEVA Logistics.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
@@ -637,11 +648,10 @@ footer p { margin: 0; max-width: 48ch; }
               <li>YOLO object detection · Vision-based alignment</li>
               <li>KUKA SCARA · PLC/HMI · Electrical wiring &amp; E‑stop safety</li>
             </ul>
-            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/edric-lum-yu-wei/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Edric_Lum_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><span class="deg">EPD ’28</span></div>
-          </details>
-        </div>
-      </article>
-
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/edric-lum-yu-wei/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Edric_Lum_Resume.pdf" target="_blank" rel="noopener">Resume ↗</a></span><a class="deg" href="https://www.sutd.edu.sg/epd/education/undergraduate/curriculum/" target="_blank" rel="noopener" aria-label="Engineering Product Development (EPD) curriculum, class of 2028">EPD ’28 ↗</a></div>
+          </div>
+        </article>
+      </div>
     </div>
   </section>
 
@@ -795,117 +805,157 @@ footer p { margin: 0; max-width: 48ch; }
 })();
 </script>
 <script>
-// Member cards: clicking a card (anywhere but its links) toggles it, and only
-// one card is open at a time. The open card moves to the start of its row and
-// spans two columns.
-//
-// The change is a three-step fade-through, so nothing is ever stretched or
-// shown twice: the content of each card that changes size fades out; a bare
-// frame then resizes from the card's old slot to its new one while the other
-// cards slide into place and the grid's height eases to fit; finally the
-// content fades back in at its new layout.
+// Team: each portrait bubble opens its member card in the stage below, one
+// member at a time. Opening, the portrait flies from its bubble into the
+// card's photo slot and squares off, then the frame unrolls from the photo
+// and the text fades in. Closing plays the same steps in reverse, and
+// switching members sends one portrait home while the next flies in. Without
+// JavaScript the bubbles are plain links to cards that are all shown.
 (() => {
-  const grid = document.querySelector('.members');
-  if (!grid) return;
-  const cards = [...grid.querySelectorAll('.member')];
+  const team = document.querySelector('.team');
+  if (!team) return;
+  const stage = team.querySelector('.stage');
+  const hint = team.querySelector('.stage-hint');
+  const bubbles = [...team.querySelectorAll('.bubble')];
+  const cards = bubbles.map((b) => document.getElementById(b.hash.slice(1)));
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const EASE = 'cubic-bezier(0.2, 0.7, 0.2, 1)';
-  const FADE_OUT = 120, MOVE = 400, FADE_IN = 200;
+  const FULL = 'inset(-8px)';  // the frame plus its corner marks
 
-  const isOpen = (card) => card.querySelector('.m-more').open;
-  const content = (card) => [...card.querySelectorAll(':scope > .m-photo, :scope > .m-body')];
+  const portrait = (i) => bubbles[i].querySelector('img');
+  const photo = (i) => cards[i].querySelector('.m-photo img');
+  const body = (i) => cards[i].querySelector('.m-body');
 
-  const show = (target) => {
-    const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
-    cards.forEach((card, i) => {
-      const open = card === target;
-      card.querySelector('.m-more').open = open;
-      card.style.order = open ? Math.floor(i / cols) * cols * 2 - 1 : i * 2;
+  let current = -1;
+  const show = (i) => {
+    current = i;
+    bubbles.forEach((b, j) => {
+      b.classList.toggle('is-active', j === i);
+      b.setAttribute('aria-expanded', String(j === i));
     });
+    cards.forEach((c, j) => { c.hidden = j !== i; });
+    hint.hidden = i !== -1;
   };
 
-  // Card position relative to the grid, so scroll changes between
-  // measurements don't skew the slide.
-  const slot = (card) => {
-    const g = grid.getBoundingClientRect(), r = card.getBoundingClientRect();
-    return { left: r.left - g.left, top: r.top - g.top, width: r.width, height: r.height };
+  // Geometry relative to .team, so scrolling mid-animation changes nothing.
+  const box = (el) => {
+    const t = team.getBoundingClientRect(), r = el.getBoundingClientRect();
+    return { left: r.left - t.left, top: r.top - t.top, width: r.width, height: r.height };
   };
-  const px = (box) => ({ left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px` });
-
-  const ghostFor = (card) => {
-    const ghost = document.createElement('div');
-    ghost.className = 'member-ghost';
-    ghost.classList.toggle('is-hovered', card.matches(':hover'));
-    ghost.innerHTML = '<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>';
-    grid.append(ghost);
-    return ghost;
+  // A clip-path that shows only the photo of card i, pulled in by a pixel so
+  // sub-pixel rounding never leaves a sliver of the frame showing.
+  const photoOnly = (i) => {
+    const c = cards[i].getBoundingClientRect(), p = photo(i).getBoundingClientRect();
+    const edge = (n) => `${n + 1}px`;
+    return `inset(${edge(p.top - c.top)} ${edge(c.right - p.right)} ${edge(c.bottom - p.bottom)} ${edge(p.left - c.left)})`;
   };
 
-  // Everything the current toggle has in flight, so a click mid-animation can
+  // Everything the current change has in flight, so a click mid-animation can
   // snap it to its end state before starting the next one.
-  let run = 0, animations = [], ghosts = [], hidden = [];
+  let run = 0, animations = [], flights = [];
   const track = (animation) => { animations.push(animation); return animation; };
-  const done = (list) => Promise.all(list.map((a) => a.finished)).catch(() => {});
+  const finish = async (id) => {
+    await Promise.all(animations.map((a) => a.finished)).catch(() => {});
+    if (id === run) settle();
+  };
   const settle = () => {
     animations.forEach((a) => a.cancel());
-    ghosts.forEach((g) => g.remove());
-    hidden.forEach((c) => { c.style.opacity = ''; });
-    animations = []; ghosts = []; hidden = [];
+    flights.forEach((f) => f.remove());
+    animations = []; flights = [];
   };
 
-  const toggle = async (card) => {
+  const fly = (img, from, to, fromRadius, toRadius, duration) => {
+    const flight = document.createElement('img');
+    flight.className = 'portrait-flight';
+    flight.src = img.currentSrc || img.src;
+    flight.alt = '';
+    team.append(flight);
+    flights.push(flight);
+    const frame = (b, radius) => ({
+      left: `${b.left}px`, top: `${b.top}px`, width: `${b.width}px`, height: `${b.height}px`, borderRadius: radius,
+    });
+    track(flight.animate([frame(from, fromRadius), frame(to, toRadius)], { duration, easing: EASE, fill: 'forwards' }));
+  };
+  const hide = (el, duration) => track(el.animate({ opacity: [0, 0] }, { duration }));
+  const fadeOut = (el) => track(el.animate({ opacity: [1, 0] }, { duration: 160, easing: 'ease-in', fill: 'forwards' }));
+  const fadeIn = (el, delay) => track(el.animate(
+    [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }],
+    { duration: 300, delay, easing: EASE, fill: 'backwards' }));
+  const resize = (from, duration) => {
+    const to = stage.offsetHeight;
+    if (from !== to) track(stage.animate({ height: [`${from}px`, `${to}px`] }, { duration, easing: EASE }));
+  };
+
+  const open = async (i, id) => {
+    const height = stage.offsetHeight;
+    const from = box(portrait(i));
+    show(i);
+    resize(height, 460);
+    fly(portrait(i), from, box(photo(i)), '50%', '0px', 460);
+    hide(photo(i), 460);
+    track(cards[i].animate({ clipPath: [photoOnly(i), FULL] },
+      { duration: 380, delay: 340, easing: EASE, fill: 'backwards' }));
+    fadeIn(body(i), 460);
+    cards[i].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    await finish(id);
+  };
+
+  const close = async (i, id) => {
+    fadeOut(body(i));
+    const roll = track(cards[i].animate({ clipPath: [FULL, photoOnly(i)] },
+      { duration: 300, delay: 60, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' }));
+    await roll.finished.catch(() => {});
+    if (id !== run) return;
+    const height = stage.offsetHeight;
+    const from = box(photo(i));
+    show(-1);
+    resize(height, 440);
+    fly(photo(i), from, box(portrait(i)), '0px', '50%', 440);
+    track(hint.animate({ opacity: [0, 1] }, { duration: 240, delay: 240, fill: 'backwards' }));
+    await finish(id);
+  };
+
+  const swap = async (a, b, id) => {
+    const out = fadeOut(body(a));
+    await out.finished.catch(() => {});
+    if (id !== run) return;
+    const height = stage.offsetHeight, oldCard = cards[a].offsetHeight;
+    const homeFrom = box(photo(a)), inFrom = box(portrait(b));
+    show(b);
+    resize(height, 460);
+    fly(photo(a), homeFrom, box(portrait(a)), '0px', '50%', 460);
+    fly(portrait(b), inFrom, box(photo(b)), '50%', '0px', 460);
+    hide(photo(b), 460);
+    const grow = cards[b].offsetHeight - oldCard;
+    if (grow > 0) track(cards[b].animate({ clipPath: [`inset(-8px -8px ${grow - 8}px -8px)`, FULL] },
+      { duration: 460, easing: EASE }));
+    fadeIn(body(b), 300);
+    cards[b].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    await finish(id);
+  };
+
+  const select = (i) => {
     settle();
     const id = ++run;
-    const prev = cards.find(isOpen) ?? null;
-    const next = card === prev ? null : card;
-    if (reduced.matches) { show(next); return; }
-    const changing = [prev, next].filter(Boolean);
-
-    // 1. Fade out the content of the cards that change size.
-    const fadeOut = changing.flatMap(content).map((el) =>
-      track(el.animate({ opacity: [1, 0] }, { duration: FADE_OUT, easing: 'ease-in', fill: 'forwards' })));
-    await done(fadeOut);
-    if (id !== run) return;
-
-    // 2. Re-lay the grid, then slide each card from its old slot to its new
-    //    one. Resizing cards are hidden behind a bare frame that does the move.
-    const height = grid.offsetHeight;
-    const first = new Map(cards.map((c) => [c, slot(c)]));
-    show(next);
-    const moves = [];
-    cards.forEach((c) => {
-      const from = first.get(c), to = slot(c);
-      if (changing.includes(c)) {
-        const ghost = ghostFor(c);
-        ghosts.push(ghost);
-        hidden.push(c);
-        c.style.opacity = '0';
-        moves.push(track(ghost.animate([px(from), px(to)], { duration: MOVE, easing: EASE, fill: 'forwards' })));
-      } else if (from.left !== to.left || from.top !== to.top) {
-        moves.push(track(c.animate(
-          [{ transform: `translate(${from.left - to.left}px, ${from.top - to.top}px)` }, { transform: 'none' }],
-          { duration: MOVE, easing: EASE })));
-      }
-    });
-    const newHeight = grid.offsetHeight;
-    if (newHeight !== height) moves.push(track(grid.animate(
-      { height: [`${height}px`, `${newHeight}px`] }, { duration: MOVE, easing: EASE })));
-    await done(moves);
-    if (id !== run) return;
-
-    // 3. Swap the frames back for the real cards and fade their content in.
-    settle();
-    changing.flatMap(content).forEach((el) =>
-      track(el.animate({ opacity: [0, 1] }, { duration: FADE_IN, easing: 'ease-out' })));
+    const prev = current, next = i === current ? -1 : i;
+    if (reduced.matches) show(next);
+    else if (prev === -1) open(next, id);
+    else if (next === -1) close(prev, id);
+    else swap(prev, next, id);
   };
 
-  show(null);
-  cards.forEach((card) => {
-    card.addEventListener('click', (e) => {
-      if (e.target.closest('a')) return;
-      e.preventDefault();
-      toggle(card);
-    });
+  team.classList.add('is-live');
+  show(cards.findIndex((c) => `#${c.id}` === location.hash));
+  bubbles.forEach((b, i) => b.addEventListener('click', (e) => { e.preventDefault(); select(i); }));
+  cards.forEach((c, i) => c.querySelector('.m-close').addEventListener('click', () => {
+    select(i);
+    bubbles[i].focus({ preventScroll: true });
+  }));
+  team.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || current === -1) return;
+    const i = current;
+    select(i);
+    bubbles[i].focus({ preventScroll: true });
   });
 })();
 </script>
