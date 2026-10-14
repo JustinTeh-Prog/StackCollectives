@@ -15,7 +15,7 @@ The page reads as an engineering drawing set:
 - **Framed objects** (`.plate`, `.cell-frame`, `.member`, the loader frame) carry `+` registration crosses at the corners: four `<i class="corner tl|tr|bl|br">` children.
 - **Plate**: the "Working with us" spec table, with a title block and No. / Property / Value / Remark columns. Below 720px each row re-stacks as a small card.
 - **Cells**: wireframe cards with no fill, used for "Why partner with us" (three across) and selected projects (two across).
-- **Member cards**: square headshot, name, role, and a `<details>` panel with the intro, key skills, LinkedIn and resume links. The whole card toggles the panel; an open card spans two columns, and a FLIP animation slides the neighbouring cards into place.
+- **Member cards**: square headshot, name, role, and a `<details>` panel with the intro, key skills, LinkedIn and resume links. The whole card toggles the panel and only one card is open at a time; an open card moves to the start of its row and spans two columns.
 - **Timeline**: ruled rows with the date range on the left and the milestone on the right.
 - **Showcase strip**: three ruled links to past SUTD Capstone showcases, newest first.
 - **Buttons**: the accent primary button is the only solid fill on the page; secondary actions use ghost buttons.
@@ -24,8 +24,9 @@ The page reads as an engineering drawing set:
 
 Motion is limited to the load-in, the partner reel and responses to user actions.
 
-- **Load-in**: registration crosses converge on the wordmark, the title scans in, a hairline plots across with a percentage counter, then the sheet wipes up. It is pure CSS, ends by 0.86s and never blocks input.
-- **Partner reel**: two identical runs of logos slide −50% on a 45s loop under an edge-fade mask, and pause on hover. Logos are greyscale at rest and full colour on hover.
+- **Load-in**: registration crosses converge on the wordmark, the title scans in, a hairline plots across with a percentage counter, then the sheet fades into the page. It is pure CSS, ends by 1.5s and never blocks input.
+- **Partner reel**: two identical runs of logos drift left under an edge-fade mask, one run per 45s. Hovering the logos pauses the reel; hovering the square arrow at either end runs it six times faster in that direction, with speed changes eased. Logos are greyscale at rest and full colour on hover. The reel script drives this; without JavaScript a CSS animation runs instead, and the arrows are hidden on touch screens.
+- **Member cards**: opening or closing a card runs a view transition. Neighbouring cards slide to their new slots, and the card that changes size is cropped rather than stretched as it resizes. Browsers without view transitions get a plain slide.
 - **Reduced motion**: the loader is skipped, the reel stops and becomes a single scrollable run, and the card animation is disabled.
 
 ## Content rules
