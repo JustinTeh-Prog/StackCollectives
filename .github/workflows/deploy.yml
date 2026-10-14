@@ -1,0 +1,62 @@
+# CI/CD: check the site on every push and PR, then deploy to Vercel.
+#   push to main      -> production deploy
+#   pull request      -> preview deploy (URL in the run summary)
+# Needs repo secrets VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID (see README).
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/check.mjs
+      - run: node scripts/build.mjs
+
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
+    # Forked PRs don't get secrets, so they stop at the check job.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      TARGET: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+    steps:
+      - name: Skip when Vercel secrets are not set yet
+        if: env.VERCEL_TOKEN == ''
+        run: echo "::warning::VERCEL_TOKEN is not set; skipping deploy. See README > Deploying."
+      - uses: actions/checkout@v4
+        if: env.VERCEL_TOKEN != ''
+      - uses: actions/setup-node@v4
+        if: env.VERCEL_TOKEN != ''
+        with:
+          node-version: 22
+      - name: Install Vercel CLI
+        if: env.VERCEL_TOKEN != ''
+        run: npm install --global vercel@latest
+      - name: Pull Vercel project settings
+        if: env.VERCEL_TOKEN != ''
+        run: vercel pull --yes --environment=$TARGET --token=$VERCEL_TOKEN
+      - name: Build
+        if: env.VERCEL_TOKEN != ''
+        run: vercel build $([ "$TARGET" = production ] && echo --prod) --token=$VERCEL_TOKEN
+      - name: Deploy
+        if: env.VERCEL_TOKEN != ''
+        run: |
+          url=$(vercel deploy --prebuilt $([ "$TARGET" = production ] && echo --prod) --token=$VERCEL_TOKEN)
+          echo "Deployed ($TARGET): $url"
+          echo "### Vercel $TARGET deploy: $url" >> "$GITHUB_STEP_SUMMARY"

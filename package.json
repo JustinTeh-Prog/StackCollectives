@@ -1,0 +1,10 @@
+{
+  "name": "stackcollectives-portfolio",
+  "private": true,
+  "description": "StackCollectives SUTD Capstone 2027 team portfolio (static site)",
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "build": "node scripts/build.mjs",
+    "preview": "npm run build && npx --yes serve@14.2.4 dist"
+  }
+}

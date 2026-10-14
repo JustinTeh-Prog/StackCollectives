@@ -7,7 +7,7 @@ A one-page team portfolio that fronts StackCollectives' outreach to prospective 
 Managers / engineers at Singapore companies deciding whether to sponsor a capstone project. Secondary: SUTD Capstone Office reviewers.
 
 ## Hard constraints
-- **Static site, `index.html` entrypoint** — deployable as-is to GitHub Pages and Vercel. No build step, no framework, no server code. Plain HTML/CSS/JS only.
+- **Static site, `index.html` entrypoint** — hosted on Vercel. No framework, no server code; the only build step copies the publishable files into `dist/`. Plain HTML/CSS/JS only.
 - All assets referenced by **relative paths** (`assets/`, `_ds/`).
 - Visual style: bound **Industry** design system (`_ds/industry-…/styles.css`); no invented colors/type.
 - **No fabricated content.** Every claim about a member traces to their CV in `uploads/group_CV/` (or, for Edric Lum, his public LinkedIn trace). No invented clients, metrics, or testimonials — hence no quote section.
@@ -30,8 +30,10 @@ Managers / engineers at Singapore companies deciding whether to sponsor a capsto
 - Past capstones: https://capstoneshowcase.sutd.edu.sg · Programme queries: capstone@sutd.edu.sg
 
 ## Assets
-- Headshots in `assets/team/*.webp` (571×571). **Missing: Ryan** — empty drop slot until supplied.
-- **Edric's CV pending** — his card carries only the verifiable robotics-intern credit (T1 dual-arm VLA robot) + LinkedIn; update when CV arrives.
+- Headshots in `assets/team/*.webp`, square, all seven members.
+- Resumes in `assets/cv/`, all seven members.
+- Partner logos in `assets/partners/` (A*STAR, HTX, ST Engineering, Changi Airport Group, Dell, Xilinx, CEVA Logistics, Certis, Griffin Labs, Ento). Griffin Labs is upscaled from a 250px source; swap in a vector original if one turns up.
+- Member descriptions: no em dashes, no hyperbole, no pronouns; every claim traceable to the CV.
 
 ## Deferred / later
 - Real team photo for an about section; testimonial once a partner exists; favicon/OG tags before launch.

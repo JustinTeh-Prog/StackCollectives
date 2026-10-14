@@ -29,14 +29,17 @@ Plain engineering, matter-of-fact, first person plural ("we"). Claims carry thei
 
 ## Files
 ```
-index.html                  — the whole site (content + page CSS)
-ds-base.js                  — DS loader (styles.css + bundle)
-image-slot.js               — drop-slot component (vendored)
+index.html                  — the whole site (content + page CSS); links _ds/…/styles.css directly
 assets/StackCollectives_Capstone_Outreach.pdf
-assets/team/{justin,yida,phelia,benedict,owen,edric}.webp   (ryan pending)
+assets/team/{justin,owen,yida,ryan,phelia,benedict,edric}.webp
+assets/partners/*.webp      — logo reel tiles, 480×192 transparent, equal visual area
 _ds/industry-…/             — design-system tokens + bundle
 REQUIREMENT.md · DESIGN.md
 ```
+(`ds-base.js`, `image-slot.js` are leftovers from the design tool; the page no longer loads them.)
+
+## Partner reel
+Logos sit in one `.reel-track` list, run twice (second run `aria-hidden`), sliding −50% on a 45 s loop under an edge-fade mask; hover pauses. Greyscale at rest, full colour on hover. Reduced motion: no animation, single run, horizontal scroll.
 
 ## Deployment
-GitHub Pages: push repo root, enable Pages on main. Vercel: import repo, framework = Other, no build command, output dir = root. Everything is relative-pathed; fonts load from the DS stylesheet. To update a headshot: overwrite the file in `assets/team/`. To update Edric's card: edit his `<article>` in `index.html` when his CV arrives.
+Vercel via GitHub Actions — see README. `scripts/build.mjs` publishes only `index.html`, `_ds/` and `assets/` into `dist/`; `scripts/check.mjs` gates the deploy.

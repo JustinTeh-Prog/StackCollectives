@@ -1,0 +1,8 @@
+dist/
+node_modules/
+partnerlogos/
+
+7.3 Capstone - Shortcut.lnk
+.vercel/
+*.lnk
+.playwright-mcp/
