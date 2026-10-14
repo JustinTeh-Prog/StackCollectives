@@ -26,7 +26,7 @@ Motion is limited to the load-in, the partner reel and responses to user actions
 
 - **Load-in**: registration crosses converge on the wordmark, the title scans in, a hairline plots across with a percentage counter, then the sheet fades into the page. It is pure CSS, ends by 1.5s and never blocks input.
 - **Partner reel**: two identical runs of logos drift left under an edge-fade mask, one run per 45s. Hovering the logos pauses the reel; hovering the square arrow at either end runs it six times faster in that direction, with speed changes eased. Logos are greyscale at rest and full colour on hover. The reel script drives this; without JavaScript a CSS animation runs instead, and the arrows are hidden on touch screens.
-- **Member cards**: opening or closing a card runs a view transition. Neighbouring cards slide to their new slots, and the card that changes size is cropped rather than stretched as it resizes. Browsers without view transitions get a plain slide.
+- **Member cards**: opening or closing a card is a fade-through. The content of the card that changes size fades out (120ms). A bare frame then resizes from its old slot to its new one while the other cards slide into place and the grid's height eases to fit (400ms). Finally the content fades in at its new layout (200ms). A click mid-animation snaps to the end state and starts the next change.
 - **Reduced motion**: the loader is skipped, the reel stops and becomes a single scrollable run, and the card animation is disabled.
 
 ## Content rules

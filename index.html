@@ -66,13 +66,13 @@ a.btn { text-decoration: none; }
 .close .row { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--leading); }
 
 /* — registration crosses shared by every framed object — */
-.plate, .cell-frame, .member, .loader-frame { position: relative; border: 1px solid var(--color-divider); }
-:is(.plate, .cell-frame, .member, .loader-frame) > .corner {
+.plate, .cell-frame, .member, .member-ghost, .loader-frame { position: relative; border: 1px solid var(--color-divider); }
+:is(.plate, .cell-frame, .member, .member-ghost, .loader-frame) > .corner {
   position: absolute; width: 15px; height: 15px;
   color: color-mix(in srgb, var(--color-text) 55%, transparent); pointer-events: none; }
-:is(.plate, .cell-frame, .member, .loader-frame) > .corner::before {
+:is(.plate, .cell-frame, .member, .member-ghost, .loader-frame) > .corner::before {
   content: ""; position: absolute; left: 7px; top: 0; width: 1px; height: 100%; background: currentColor; }
-:is(.plate, .cell-frame, .member, .loader-frame) > .corner::after {
+:is(.plate, .cell-frame, .member, .member-ghost, .loader-frame) > .corner::after {
   content: ""; position: absolute; top: 7px; left: 0; width: 100%; height: 1px; background: currentColor; }
 .corner.tl { top: -8px; left: -8px; }
 .corner.tr { top: -8px; right: -8px; }
@@ -135,8 +135,8 @@ a.btn { text-decoration: none; }
   width: 6px; height: 6px; background: var(--color-accent); }
 
 /* — member cards — */
-.members { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: clamp(24px, 2.5vw, 36px); margin-top: calc(var(--leading) - var(--half)); }
+.members { position: relative; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  align-content: start; gap: clamp(24px, 2.5vw, 36px); margin-top: calc(var(--leading) - var(--half)); }
 .member { align-self: start; cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease; }
 .member:hover { border-color: var(--color-accent); box-shadow: var(--shadow-sm); }
@@ -191,18 +191,10 @@ a.btn { text-decoration: none; }
 .m-more > summary .less { display: none; }
 .m-more[open] > summary .more { display: none; }
 .m-more[open] > summary .less { display: inline; }
-/* open/close morph, run as a view transition by the member-card script.
-   Moving cards slide; the card opening or closing resizes inside a clipped
-   box with its snapshots unscaled and pinned top-left, so text never
-   stretches. The nav keeps its own layer so cards pass beneath it. */
-.nav { view-transition-name: site-nav; }
-::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
-  animation-duration: 0.45s; animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1); }
-::view-transition-group(member-opening), ::view-transition-group(member-closing) {
-  overflow: clip; overflow-clip-margin: 8px; }
-::view-transition-old(member-opening), ::view-transition-new(member-opening),
-::view-transition-old(member-closing), ::view-transition-new(member-closing) {
-  width: 100%; height: 100%; object-fit: none; object-position: left top; }
+/* stand-in frame the member-card script resizes between slots while a card's
+   content is faded out */
+.member-ghost { position: absolute; margin: 0; pointer-events: none; }
+.member-ghost.is-hovered { border-color: var(--color-accent); box-shadow: var(--shadow-sm); }
 
 /* — timeline — */
 .timeline { list-style: none; margin: calc(var(--leading) * 1.5) 0 0; padding: 0; }
@@ -805,14 +797,23 @@ footer p { margin: 0; max-width: 48ch; }
 <script>
 // Member cards: clicking a card (anywhere but its links) toggles it, and only
 // one card is open at a time. The open card moves to the start of its row and
-// spans two columns. The reflow is animated with a view transition, so cards
-// morph in size and position; browsers without view transitions get a FLIP
-// slide instead.
+// spans two columns.
+//
+// The change is a three-step fade-through, so nothing is ever stretched or
+// shown twice: the content of each card that changes size fades out; a bare
+// frame then resizes from the card's old slot to its new one while the other
+// cards slide into place and the grid's height eases to fit; finally the
+// content fades back in at its new layout.
 (() => {
   const grid = document.querySelector('.members');
   if (!grid) return;
   const cards = [...grid.querySelectorAll('.member')];
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const EASE = 'cubic-bezier(0.2, 0.7, 0.2, 1)';
+  const FADE_OUT = 120, MOVE = 400, FADE_IN = 200;
+
+  const isOpen = (card) => card.querySelector('.m-more').open;
+  const content = (card) => [...card.querySelectorAll(':scope > .m-photo, :scope > .m-body')];
 
   const show = (target) => {
     const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
@@ -823,43 +824,79 @@ footer p { margin: 0; max-width: 48ch; }
     });
   };
 
-  const slide = (mutate) => {
-    const first = new Map(cards.map((c) => [c, c.getBoundingClientRect()]));
-    mutate();
-    cards.forEach((c) => {
-      const f = first.get(c), l = c.getBoundingClientRect();
-      const dx = f.left - l.left, dy = f.top - l.top;
-      if (dx || dy) c.animate(
-        [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }],
-        { duration: 450, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)' });
-    });
+  // Card position relative to the grid, so scroll changes between
+  // measurements don't skew the slide.
+  const slot = (card) => {
+    const g = grid.getBoundingClientRect(), r = card.getBoundingClientRect();
+    return { left: r.left - g.left, top: r.top - g.top, width: r.width, height: r.height };
+  };
+  const px = (box) => ({ left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px` });
+
+  const ghostFor = (card) => {
+    const ghost = document.createElement('div');
+    ghost.className = 'member-ghost';
+    ghost.classList.toggle('is-hovered', card.matches(':hover'));
+    ghost.innerHTML = '<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>';
+    grid.append(ghost);
+    return ghost;
   };
 
-  let active = null;
-  const morph = (prev, next, mutate) => {
-    active?.skipTransition();
-    // The cards that change size get fixed names so the CSS can crop them
-    // while they resize instead of stretching their snapshots.
-    cards.forEach((c, i) => {
-      c.style.viewTransitionName =
-        c === next ? 'member-opening' : c === prev ? 'member-closing' : `member-${i}`;
-    });
-    const transition = document.startViewTransition(mutate);
-    active = transition;
-    transition.finished.finally(() => {
-      if (active !== transition) return;
-      active = null;
-      cards.forEach((c) => { c.style.viewTransitionName = ''; });
-    });
+  // Everything the current toggle has in flight, so a click mid-animation can
+  // snap it to its end state before starting the next one.
+  let run = 0, animations = [], ghosts = [], hidden = [];
+  const track = (animation) => { animations.push(animation); return animation; };
+  const done = (list) => Promise.all(list.map((a) => a.finished)).catch(() => {});
+  const settle = () => {
+    animations.forEach((a) => a.cancel());
+    ghosts.forEach((g) => g.remove());
+    hidden.forEach((c) => { c.style.opacity = ''; });
+    animations = []; ghosts = []; hidden = [];
   };
 
-  const toggle = (card) => {
-    const prev = cards.find((c) => c.querySelector('.m-more').open) ?? null;
+  const toggle = async (card) => {
+    settle();
+    const id = ++run;
+    const prev = cards.find(isOpen) ?? null;
     const next = card === prev ? null : card;
-    const mutate = () => show(next);
-    if (reduced.matches) mutate();
-    else if (document.startViewTransition) morph(prev, next, mutate);
-    else slide(mutate);
+    if (reduced.matches) { show(next); return; }
+    const changing = [prev, next].filter(Boolean);
+
+    // 1. Fade out the content of the cards that change size.
+    const fadeOut = changing.flatMap(content).map((el) =>
+      track(el.animate({ opacity: [1, 0] }, { duration: FADE_OUT, easing: 'ease-in', fill: 'forwards' })));
+    await done(fadeOut);
+    if (id !== run) return;
+
+    // 2. Re-lay the grid, then slide each card from its old slot to its new
+    //    one. Resizing cards are hidden behind a bare frame that does the move.
+    const height = grid.offsetHeight;
+    const first = new Map(cards.map((c) => [c, slot(c)]));
+    show(next);
+    const moves = [];
+    cards.forEach((c) => {
+      const from = first.get(c), to = slot(c);
+      if (changing.includes(c)) {
+        const ghost = ghostFor(c);
+        ghosts.push(ghost);
+        hidden.push(c);
+        c.style.opacity = '0';
+        moves.push(track(ghost.animate([px(from), px(to)], { duration: MOVE, easing: EASE, fill: 'forwards' })));
+      } else if (from.left !== to.left || from.top !== to.top) {
+        moves.push(track(c.animate(
+          [{ transform: `translate(${from.left - to.left}px, ${from.top - to.top}px)` }, { transform: 'none' }],
+          { duration: MOVE, easing: EASE })));
+      }
+    });
+    const newHeight = grid.offsetHeight;
+    if (newHeight !== height) moves.push(track(grid.animate(
+      { height: [`${height}px`, `${newHeight}px`] }, { duration: MOVE, easing: EASE })));
+    await done(moves);
+    if (id !== run) return;
+
+    // 3. Swap the frames back for the real cards and fade their content in.
+    settle();
+    changing.flatMap(content).forEach((el) =>
+      track(el.animate({ opacity: [0, 1] }, { duration: FADE_IN, easing: 'ease-out' })));
   };
 
   show(null);
