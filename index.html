@@ -6,13 +6,14 @@
 <meta name="description" content="StackCollectives is a seven-engineer SUTD capstone team sourcing a student-initiated industry project with a Singapore company, September 2027 – April 2028.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="_ds/industry-43e42b3a-3a95-4d40-b112-0713ad3bd727/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&amp;family=Barlow+Condensed:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="assets/css/industry.css">
 <style>
-/* Page scaffolding on the Industry landing grammar — every color, font,
-   radius and shadow comes from the DS styles.css. 24px leading unit,
-   12px half-step; kicker-over-rule section heads; plates with
-   registration crosses for tabulated data; wireframe cells for cards.
-   ?baselines or B toggles the rhythm overlay. */
+/* Page layout on top of the Industry design system (assets/css/industry.css),
+   which supplies every colour, font, radius and shadow. Vertical rhythm runs
+   on a 24px leading unit with a 12px half-step. Section heads are a kicker
+   over a hairline rule; tabulated data sits in plates with registration
+   crosses at the corners; cards are wireframe cells. */
 :root {
   --leading: 24px;
   --half: 12px;
@@ -65,20 +66,20 @@ a.btn { text-decoration: none; }
 .close .row { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--leading); }
 
 /* — registration crosses shared by every framed object — */
-.plate, .cell-frame, .member { position: relative; border: 1px solid var(--color-divider); }
-.plate > .corner, .cell-frame > .corner, .member > .corner {
+.plate, .cell-frame, .member, .loader-frame { position: relative; border: 1px solid var(--color-divider); }
+:is(.plate, .cell-frame, .member, .loader-frame) > .corner {
   position: absolute; width: 15px; height: 15px;
   color: color-mix(in srgb, var(--color-text) 55%, transparent); pointer-events: none; }
-.plate > .corner::before, .cell-frame > .corner::before, .member > .corner::before {
+:is(.plate, .cell-frame, .member, .loader-frame) > .corner::before {
   content: ""; position: absolute; left: 7px; top: 0; width: 1px; height: 100%; background: currentColor; }
-.plate > .corner::after, .cell-frame > .corner::after, .member > .corner::after {
+:is(.plate, .cell-frame, .member, .loader-frame) > .corner::after {
   content: ""; position: absolute; top: 7px; left: 0; width: 100%; height: 1px; background: currentColor; }
 .corner.tl { top: -8px; left: -8px; }
 .corner.tr { top: -8px; right: -8px; }
 .corner.bl { bottom: -8px; left: -8px; }
 .corner.br { bottom: -8px; right: -8px; }
 
-/* — the data plates (sheets 01 and 02) — */
+/* — data plate: framed spec table with a title block — */
 .sheet { padding: calc(3 * var(--leading)) 0 calc(2.5 * var(--leading)); }
 .title-block { display: flex; flex-wrap: wrap; align-items: stretch; justify-content: flex-end;
   border-bottom: 1px solid var(--color-divider); }
@@ -227,12 +228,32 @@ a.btn { text-decoration: none; }
   .reel-track { animation: none; }
   .reel-track li[aria-hidden] { display: none; }
 }
-.reel-note { margin: var(--half) 0 0; font-size: 13px; line-height: 20px; letter-spacing: 0.04em;
+.note { margin: var(--half) 0 0; font-size: 13px; line-height: 20px; letter-spacing: 0.04em;
   color: color-mix(in srgb, var(--color-text) 70%, transparent); }
 .sub-label { display: block; font-size: 13px; line-height: var(--half); letter-spacing: 0.08em;
   text-transform: uppercase; font-weight: 600;
   color: color-mix(in srgb, var(--color-text) 70%, transparent);
   margin: calc(2 * var(--leading)) 0 0; }
+
+/* — past showcase links: one ruled strip, newest year first — */
+.showcases { display: grid; grid-template-columns: repeat(3, 1fr);
+  list-style: none; margin: calc(var(--leading) - var(--half)) 0 0; padding: 0;
+  border-block: 1px solid var(--color-divider); }
+.showcases li + li { border-left: 1px solid var(--color-divider); }
+.showcases a { display: flex; justify-content: space-between; align-items: baseline; gap: var(--half);
+  padding: var(--half) var(--leading); color: var(--color-text); text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease; }
+.showcases a:hover { background: var(--color-accent-100); color: var(--color-accent-800); }
+.showcases a:active { background: var(--color-accent-200); }
+.sc-year { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 32px; line-height: calc(1.5 * var(--leading)); letter-spacing: 0.02em;
+  font-feature-settings: "tnum" 1; }
+.sc-label { font-size: 13px; line-height: 20px; font-weight: 600; letter-spacing: 0.04em;
+  color: var(--color-accent-700); white-space: nowrap; }
+@media (max-width: 640px) {
+  .showcases { grid-template-columns: 1fr; }
+  .showcases li + li { border-left: 0; border-top: 1px solid var(--color-divider); }
+}
 
 /* — skills matrix — */
 .table-scroll { overflow-x: auto; margin-top: calc(var(--leading) - var(--half)); }
@@ -266,6 +287,47 @@ footer .f-sub { display: block; font-size: 12px; line-height: 16px; letter-spaci
 footer p { margin: 0; max-width: 48ch; }
 @media (max-width: 640px) { footer { grid-template-columns: 1fr; } }
 
+/* — load-in: the page plots itself as a drawing sheet. Registration crosses
+   converge on the wordmark, the title scans in, a hairline plots across
+   with a percentage counter, then the sheet wipes up to reveal the page.
+   Pure CSS, finished by 0.86s; it never blocks input and is skipped
+   entirely for reduced motion. — */
+@property --plot { syntax: "<integer>"; inherits: false; initial-value: 0; }
+.loader { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center;
+  padding: var(--edge); background: var(--color-bg); pointer-events: none;
+  clip-path: inset(0 0 0 0);
+  animation: loader-out 0.26s cubic-bezier(0.7, 0, 0.2, 1) 0.6s forwards; }
+.loader-frame { width: min(400px, 100%); padding: var(--leading) var(--leading) var(--half);
+  border-color: transparent;
+  animation: loader-frame 0.3s ease-out 0.12s forwards; }
+.loader-frame > .corner { animation: loader-corner 0.34s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.loader-frame > .corner.tl { --from: -28px -28px; }
+.loader-frame > .corner.tr { --from: 28px -28px; }
+.loader-frame > .corner.bl { --from: -28px 28px; }
+.loader-frame > .corner.br { --from: 28px 28px; }
+.loader-mark { display: block; font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 36px; line-height: calc(1.5 * var(--leading)); letter-spacing: 0.02em; text-transform: uppercase;
+  clip-path: inset(0 100% 0 0);
+  animation: loader-scan 0.32s steps(14, end) 0.1s forwards; }
+.loader-meta { display: flex; justify-content: space-between; gap: var(--half);
+  margin-top: var(--half); font-size: 13px; line-height: 20px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; font-feature-settings: "tnum" 1;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+.loader-count { color: var(--color-accent-700); counter-reset: plot var(--plot);
+  animation: loader-count 0.5s cubic-bezier(0.3, 0, 0.2, 1) 0.08s forwards; }
+.loader-count::after { content: counter(plot) "%"; }
+.loader-bar { display: block; height: 2px; margin-top: var(--half); background: var(--color-accent);
+  transform: scaleX(0); transform-origin: left;
+  animation: loader-bar 0.5s cubic-bezier(0.3, 0, 0.2, 1) 0.08s forwards; }
+@keyframes loader-corner { from { opacity: 0; translate: var(--from); } }
+@keyframes loader-frame { to { border-color: var(--color-divider); } }
+@keyframes loader-scan { to { clip-path: inset(0 0 0 0); } }
+@keyframes loader-count { to { --plot: 100; } }
+@keyframes loader-bar { to { transform: scaleX(1); } }
+@keyframes loader-out { to { clip-path: inset(0 0 100% 0); visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .loader { display: none; } }
+@media print { .loader { display: none; } }
+
 /* — responsive collapse — */
 @media (max-width: 880px) {
   .cells, .cells.two { grid-template-columns: 1fr; gap: calc(var(--leading) + 16px); }
@@ -286,27 +348,20 @@ footer p { margin: 0; max-width: 48ch; }
   .spec .s-num { grid-column: 1; }
   .spec .s-prop { grid-column: 2; }
   .spec .s-val, .spec .s-rem { grid-column: 1 / -1; }
-  .spec .s-blank { display: none; }
-}
-
-/* Review aid: 24px rhythm overlay — ?baselines or the B key. */
-body[data-baselines] { position: relative; }
-body[data-baselines]::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background:
-    repeating-linear-gradient(to bottom,
-      color-mix(in srgb, var(--color-accent) 35%, transparent) 0 1px,
-      transparent 1px var(--leading)),
-    repeating-linear-gradient(to bottom,
-      transparent 0 var(--half),
-      color-mix(in srgb, var(--color-accent) 16%, transparent) var(--half) calc(var(--half) + 1px),
-      transparent calc(var(--half) + 1px) var(--leading));
 }
 </style>
 
 </head>
 <body>
-<nav class="nav" data-screen-label="Nav">
+<div class="loader" aria-hidden="true">
+  <div class="loader-frame">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <span class="loader-mark">StackCollectives</span>
+    <span class="loader-meta"><span>SUTD Capstone 2027/28</span><span class="loader-count"></span></span>
+    <span class="loader-bar"></span>
+  </div>
+</div>
+<nav class="nav">
   <span class="nav-brand">StackCollectives</span>
   <a href="#why">Why us</a>
   <a href="#partners">Partners</a>
@@ -317,13 +372,13 @@ body[data-baselines]::after {
 </nav>
 <div class="wrap">
 
-  <section class="hero" data-screen-label="Hero">
+  <section class="hero">
     <h1 class="display"><span class="line">Built to work.</span> <span class="line">Made to matter.</span></h1>
     <p class="sub">We’re seven SUTD engineers who take your problem personally.
     From first sketch to production-ready build, we’re with you every step of the way.</p>
   </section>
 
-  <section class="section" id="why" data-screen-label="Why partner">
+  <section class="section" id="why">
     <span class="kicker">02 · Why partner with us</span>
     <hr class="caption-rule">
     <div class="cells">
@@ -357,7 +412,7 @@ body[data-baselines]::after {
     </div>
   </section>
 
-  <section class="section" id="partners" data-screen-label="Our partners">
+  <section class="section" id="partners">
     <span class="kicker">03 · Our partners</span>
     <hr class="caption-rule">
     <div class="reel" role="region" aria-label="Organisations we have worked with">
@@ -384,7 +439,7 @@ body[data-baselines]::after {
         <li aria-hidden="true"><img src="assets/partners/ento.webp" alt="" width="180" height="72"></li>
       </ul>
     </div>
-    <p class="reel-note">Organisations our members have interned with or built projects for.</p>
+    <p class="note">Organisations our members have interned with or built projects for.</p>
 
     <span class="sub-label">Selected projects</span>
     <div class="cells two">
@@ -415,7 +470,7 @@ body[data-baselines]::after {
     </div>
   </section>
 
-  <section class="section" id="team" data-screen-label="The team">
+  <section class="section" id="team">
     <span class="kicker">04 · The team</span>
     <hr class="caption-rule">
     <p class="tagline">Meet the faces that don’t do half-measures.</p>
@@ -437,7 +492,7 @@ body[data-baselines]::after {
               <li>OpenCV · KNIME · Seaborn · Matplotlib</li>
               <li>Fusion 360 · 3D printing · Through-hole soldering</li>
             </ul>
-            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/teh-nian-hong-justin/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Justin_Teh_Resume.docx" download="Justin_Teh_Resume.docx">Resume ↓</a></span><span class="deg">CSD ’28</span></div>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/teh-nian-hong-justin/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Justin_Teh_Resume.pdf" download="Justin_Teh_Resume.pdf">Resume ↓</a></span><span class="deg">CSD ’28</span></div>
           </details>
         </div>
       </article>
@@ -458,7 +513,7 @@ body[data-baselines]::after {
               <li>Git · Hugging Face Hub · Excel automation</li>
               <li>Semiconductor test operations (cleanroom, Xilinx)</li>
             </ul>
-            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/owen-yeo-562076203/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Owen_Yeo_Resume.docx" download="Owen_Yeo_Resume.docx">Resume ↓</a></span><span class="deg">CSD ’28</span></div>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/owen-yeo-562076203/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Owen_Yeo_Resume.pdf" download="Owen_Yeo_Resume.pdf">Resume ↓</a></span><span class="deg">CSD ’28</span></div>
           </details>
         </div>
       </article>
@@ -478,7 +533,7 @@ body[data-baselines]::after {
               <li>Python · MATLAB</li>
               <li>Computer vision (ESP32, OpenMV event-based camera)</li>
             </ul>
-            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/yi-da-puah/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Yi_Da_Puah_CV.pdf" download="Yi_Da_Puah_CV.pdf">Resume ↓</a></span><span class="deg">EPD ’28</span></div>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/yi-da-puah/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Yi_Da_Puah_Resume.pdf" download="Yi_Da_Puah_Resume.pdf">Resume ↓</a></span><span class="deg">EPD ’28</span></div>
           </details>
         </div>
       </article>
@@ -541,7 +596,7 @@ body[data-baselines]::after {
               <li>Microcontrollers · PCB soldering</li>
               <li>Python · C · Structured test campaigns</li>
             </ul>
-            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/benedict-julian-danandjaja-antoni-4236973b7/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Benedict_Antoni_CV.pdf" download="Benedict_Antoni_CV.pdf">Resume ↓</a></span><span class="deg">EPD ’28</span></div>
+            <div class="m-foot"><span class="links"><a href="https://www.linkedin.com/in/benedict-julian-danandjaja-antoni-4236973b7/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="assets/cv/Benedict_Antoni_Resume.pdf" download="Benedict_Antoni_Resume.pdf">Resume ↓</a></span><span class="deg">EPD ’28</span></div>
           </details>
         </div>
       </article>
@@ -570,7 +625,7 @@ body[data-baselines]::after {
     </div>
   </section>
 
-  <section class="section" id="programme" data-screen-label="The programme">
+  <section class="section" id="programme">
     <span class="kicker">05 · Working with us</span>
     <hr class="caption-rule">
     <div class="plate">
@@ -585,9 +640,10 @@ body[data-baselines]::after {
           <tr><th scope="col">No.</th><th scope="col">Property</th><th scope="col">Value</th><th scope="col">Remark</th></tr>
         </thead>
         <tbody>
-          <tr><td class="s-num">01</td><td class="s-prop">SUTD project resources</td><td class="s-val">≤ S$4,000</td><td class="s-rem">University-funded resources to build a meaningful project for your company</td></tr>
-          <tr><td class="s-num">02</td><td class="s-prop">IP &amp; generated materials</td><td class="s-val">Yours</td><td class="s-rem">All IP belongs to the partner organisation</td></tr>
-          <tr><td class="s-num">03</td><td class="s-prop">Committed window</td><td class="s-val">8 months</td><td class="s-rem">Two academic terms, September 2027 to April 2028</td></tr>
+          <tr><td class="s-num">01</td><td class="s-prop">Participation fee</td><td class="s-val">S$6,000</td><td class="s-rem">Per project team, including GST, paid by your organisation to SUTD</td></tr>
+          <tr><td class="s-num">02</td><td class="s-prop">SUTD project resources</td><td class="s-val">≤ S$4,000</td><td class="s-rem">Provided by SUTD for the project’s allowable resources</td></tr>
+          <tr><td class="s-num">03</td><td class="s-prop">IP &amp; generated materials</td><td class="s-val">Yours</td><td class="s-rem">All IP belongs to the partner organisation</td></tr>
+          <tr><td class="s-num">04</td><td class="s-prop">Committed window</td><td class="s-val">8 months</td><td class="s-rem">Two academic terms, September 2027 to April 2028</td></tr>
         </tbody>
       </table>
       <p class="sheet-note">We’re happy to do site visits and employee interviews, and to learn any specialised software the project needs.<br>Programme queries: <a href="mailto:capstone@sutd.edu.sg">capstone@sutd.edu.sg</a>.</p>
@@ -620,9 +676,17 @@ body[data-baselines]::after {
         <p>Eight months on your problem, with design reviews along the way and a working deliverable at the end.</p></div>
       </li>
     </ol>
+
+    <span class="sub-label">Past Capstone showcases</span>
+    <p class="note">See what earlier SUTD Capstone teams built with their industry partners.</p>
+    <ul class="showcases">
+      <li><a href="https://capstoneshowcase.sutd.edu.sg/projects/" target="_blank" rel="noopener"><span class="sc-year">2026</span><span class="sc-label">Latest projects ↗</span></a></li>
+      <li><a href="https://capstoneshowcase.sutd.edu.sg/2025/projects/" target="_blank" rel="noopener"><span class="sc-year">2025</span><span class="sc-label">Projects ↗</span></a></li>
+      <li><a href="https://capstoneshowcase.sutd.edu.sg/2024/projects/" target="_blank" rel="noopener"><span class="sc-year">2024</span><span class="sc-label">Projects ↗</span></a></li>
+    </ul>
   </section>
 
-  <section class="section" id="skills" data-screen-label="Skills matrix">
+  <section class="section" id="skills">
     <span class="kicker">06 · Our team at a glance</span>
     <hr class="caption-rule">
     <div class="table-scroll">
@@ -644,7 +708,7 @@ body[data-baselines]::after {
     </div>
   </section>
 
-  <section class="close" id="contact" data-screen-label="Contact">
+  <section class="close" id="contact">
     <span class="kicker">07 · Get in touch</span>
     <hr class="caption-rule">
     <h3>Ready to solve your biggest challenges?</h3>
@@ -656,8 +720,8 @@ body[data-baselines]::after {
     <footer>
       <div>
         <h4>StackCollectives</h4>
-        <span class="f-sub">SUTD Capstone 2028</span>
-        <p>Part of Singapore University of Technology and Design’s Capstone program, we’re a multidisciplinary team tackling real-world problems. For more information about SUTD Capstone, visit <a href="https://www.sutd.edu.sg/education/undergraduate/capstone/overview" target="_blank" rel="noopener">here</a>.</p>
+        <span class="f-sub">SUTD Capstone 2027/28</span>
+        <p>Part of Singapore University of Technology and Design’s Capstone programme, we’re a multidisciplinary team tackling real-world problems. Read more on <a href="https://www.sutd.edu.sg/education/undergraduate/capstone/overview/" target="_blank" rel="noopener">SUTD’s Capstone page</a>.</p>
       </div>
       <div>
         <h4>Contact</h4>
@@ -667,17 +731,6 @@ body[data-baselines]::after {
   </section>
 
 </div>
-<script>
-// Review aid: baseline-grid overlay — ?baselines in the URL, or press B.
-(() => {
-  if (new URLSearchParams(location.search).has('baselines')) document.body.setAttribute('data-baselines', '');
-  addEventListener('keydown', (e) => {
-    const t = e.target;
-    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
-    if ((e.key === 'b' || e.key === 'B') && !e.metaKey && !e.ctrlKey && !e.altKey) document.body.toggleAttribute('data-baselines');
-  });
-})();
-</script>
 <script>
 // Member cards: whole-card toggle + FLIP shuffle so the grid reflows smoothly.
 (() => {

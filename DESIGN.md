@@ -1,45 +1,36 @@
-# DESIGN.md — StackCollectives Capstone Portfolio
+# Design notes
 
-## System
-Bound **Industry** design system — steel-blue accent on a light technical ground, Barlow Condensed headings over Barlow, square corners, hairline borders, `+` registration marks on framed objects, duotone photography. Loaded via `ds-base.js` → `_ds/industry-43e42b3a-…/styles.css` + `_ds_bundle.js`. All colors/spacing/type via `var(--*)` tokens.
+## Audience and purpose
 
-## Concept
-The site reads as an **engineering drawing set**: the hero states the claim, "Sheet 01" is the team's datasheet, numbered sections (`02 ·`, `03 ·` …) follow the deck's kicker grammar, and "Sheet 02" is the programme's datasheet. A team selling engineering rigor is presented as an engineering document — the datasheet voice also sidesteps marketing-speak (per the brief: no buzzwords, no round fake metrics; every number is from a CV or the SUTD outreach PDF).
+The page is the team's pitch to managers and engineers at Singapore companies deciding whether to sponsor a Capstone project. Secondary readers are SUTD Capstone Office reviewers. A visitor should be able to see what the team can build, meet the members, see past work, understand the programme's terms and dates, and know how to get in touch.
 
-## Page grammar
-- **24px leading unit** (12px half-step); section padding in unit multiples; `text-box: trim-both` on heads.
-- **Kicker + caption rule** above every section: `NN · Title` in accent-700 caps over a 1px divider.
-- **Plates** (spec sheets): hairline frame + registration crosses, title block with register cells, `.spec` table rows (№ / property / value / remark). Mobile: rows re-stack as small plates (template's collapse, kept verbatim).
-- **Cells**: wireframe cards with corner marks, no fill — used for "why us" (3-up) and builds (2×2).
-- **Member cards**: framed cell, duotoned square headshot flush to the frame top, then: name (Condensed 21px caps) → role kicker → intro → KEY SKILLS (square accent markers) → hairline foot with degree tag + LinkedIn. Grid `auto-fill minmax(250px, 1fr)` → 4/4/3-ish flow, 1-col on phones.
-- **Timeline**: ruled two-column rows — date range (Condensed, tabular figures) | milestone + detail.
-- **Skills matrix**: system `.table`, 3 columns (Domain / Tools & methods / Carried by), horizontal-scroll wrapper under 640px.
-- The **only solid object** is the accent primary button (Email the team; one per cluster). Ghost buttons for the PDF.
+## Design system
 
-## Imagery
-All headshots pass through `.duotone` (desaturated, steel wash) inside the card frame — unifies mixed photo quality and follows the system's screen-print rule. `image-slot` components with stable ids so replacements can be dropped in the editor; Ryan's slot is empty with a labelled placeholder. **No AI-generated faces, no stock photos, no SVG illustration.**
+`assets/css/industry.css` holds the **Industry** system: a steel-blue accent (`#5980a6`) on a light technical ground (`#f2f2f3`), Barlow Condensed headings over Barlow body text, square corners and hairline borders. Take every colour, font, radius and shadow from its `var(--*)` tokens instead of hard-coding values. Page-specific CSS lives in the `<style>` block in `index.html`.
 
-## Type & ink
-- Display: `clamp(48px→96px)` Condensed caps, per-sentence line breaks, −0.052em optical left.
-- Small text in accent uses **accent-700** (5.8:1); 70% ink for furniture text; 78% for card body.
-- Values in plates/foot tags use `tnum`.
+The page reads as an engineering drawing set:
 
-## Voice
-Plain engineering, matter-of-fact, first person plural ("we"). Claims carry their numbers and sources. Banned: passionate/innovative/cutting-edge/delve-class filler, invented testimonials, exact-round improvement claims.
+- **Rhythm**: a 24px leading unit (`--leading`) with a 12px half-step (`--half`); section padding is a multiple of the unit.
+- **Section heads**: a numbered kicker (`02 · Why partner with us`) in accent-700 caps over a 1px rule.
+- **Framed objects** (`.plate`, `.cell-frame`, `.member`, the loader frame) carry `+` registration crosses at the corners: four `<i class="corner tl|tr|bl|br">` children.
+- **Plate**: the "Working with us" spec table, with a title block and No. / Property / Value / Remark columns. Below 720px each row re-stacks as a small card.
+- **Cells**: wireframe cards with no fill, used for "Why partner with us" (three across) and selected projects (two across).
+- **Member cards**: square headshot, name, role, and a `<details>` panel with the intro, key skills, LinkedIn and resume links. The whole card toggles the panel; an open card spans two columns, and a FLIP animation slides the neighbouring cards into place.
+- **Timeline**: ruled rows with the date range on the left and the milestone on the right.
+- **Showcase strip**: three ruled links to past SUTD Capstone showcases, newest first.
+- **Buttons**: the accent primary button is the only solid fill on the page; secondary actions use ghost buttons.
 
-## Files
-```
-index.html                  — the whole site (content + page CSS); links _ds/…/styles.css directly
-assets/StackCollectives_Capstone_Outreach.pdf
-assets/team/{justin,owen,yida,ryan,phelia,benedict,edric}.webp
-assets/partners/*.webp      — logo reel tiles, 480×192 transparent, equal visual area
-_ds/industry-…/             — design-system tokens + bundle
-REQUIREMENT.md · DESIGN.md
-```
-(`ds-base.js`, `image-slot.js` are leftovers from the design tool; the page no longer loads them.)
+## Motion
 
-## Partner reel
-Logos sit in one `.reel-track` list, run twice (second run `aria-hidden`), sliding −50% on a 45 s loop under an edge-fade mask; hover pauses. Greyscale at rest, full colour on hover. Reduced motion: no animation, single run, horizontal scroll.
+Motion is limited to the load-in, the partner reel and responses to user actions.
 
-## Deployment
-Vercel via GitHub Actions — see README. `scripts/build.mjs` publishes only `index.html`, `_ds/` and `assets/` into `dist/`; `scripts/check.mjs` gates the deploy.
+- **Load-in**: registration crosses converge on the wordmark, the title scans in, a hairline plots across with a percentage counter, then the sheet wipes up. It is pure CSS, ends by 0.86s and never blocks input.
+- **Partner reel**: two identical runs of logos slide −50% on a 45s loop under an edge-fade mask, and pause on hover. Logos are greyscale at rest and full colour on hover.
+- **Reduced motion**: the loader is skipped, the reel stops and becomes a single scrollable run, and the card animation is disabled.
+
+## Content rules
+
+- Every claim about a member must trace to their CV or public LinkedIn profile. No invented clients, metrics or testimonials.
+- Programme terms and dates come from SUTD's Capstone pages and the Capstone Office's student-initiated briefing.
+- Write plainly in the first person plural ("we"), and give numbers with their source.
+- Small accent text uses accent-700 for contrast; secondary text uses the ink at 70% and card body text at 78%.

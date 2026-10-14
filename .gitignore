@@ -1,8 +1,14 @@
+# Build output and dependencies
 dist/
 node_modules/
-partnerlogos/
 
-7.3 Capstone - Shortcut.lnk
-.vercel/
-*.lnk
+# Local working material: private files that must never be published
+uploads/
+partnerlogos/
+CapstoneWeb_HANDOVER.md
 .playwright-mcp/
+*.lnk
+
+# Vercel CLI link and environment files
+.vercel/
+.env*

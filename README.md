@@ -1,22 +1,25 @@
 # StackCollectives: SUTD Capstone 2027 team portfolio
 
-Static one-page site. `index.html` is the source: plain HTML/CSS/JS, no framework.
+Static one-page site for StackCollectives, a seven-person SUTD team looking for an industry partner for a student-initiated Capstone project (September 2027 to April 2028).
+
+Live at **https://stackcollective.vercel.app**. Plain HTML, CSS and JavaScript, with no framework or package dependencies.
 
 ```
-index.html          the whole page (content + page CSS)
-_ds/industry-…/     design-system tokens + components (styles.css)
-assets/team/        headshots, square .webp
-assets/partners/    partner logos, 480x192 transparent .webp tiles
-assets/cv/          resumes linked from the member cards
-scripts/check.mjs   pre-deploy check: local links resolve, images have alt text
-scripts/build.mjs   copies only the publishable files into dist/
-vercel.json         Vercel build settings
+index.html                  the whole page: content, page CSS and two small scripts
+assets/css/industry.css     design-system tokens and base components (see DESIGN.md)
+assets/team/                headshots, square .webp
+assets/partners/            partner logos, 480x192 transparent .webp tiles
+assets/cv/                  resumes linked from the member cards
+assets/StackCollectives_Capstone_Outreach.pdf
+scripts/check.mjs           pre-deploy check: local links resolve, images have alt text
+scripts/build.mjs           copies index.html and assets/ into dist/
+vercel.json                 Vercel build settings and cache headers
 .github/workflows/deploy.yml   CI/CD pipeline
 ```
 
-`uploads/` is working material and is never deployed (the build copies only `index.html`, `_ds/` and `assets/`).
-
 ## Local preview
+
+Requires Node.js 22 or later.
 
 ```
 npm run check
@@ -27,8 +30,10 @@ npm run preview     # builds dist/ and serves it at http://localhost:3000
 
 - **Copy**: edit `index.html` directly.
 - **Headshot**: overwrite `assets/team/<name>.webp` with a square image (640px or larger).
-- **Resume**: replace the file in `assets/cv/` and keep the same filename, or update the card's link.
+- **Resume**: replace the file in `assets/cv/` and keep the same filename, or update the card's link. Everything in `assets/` is public, so remove phone numbers and home addresses first.
 - **Partner logo**: add a 480x192 transparent `.webp` to `assets/partners/`, then add it to **both** runs of the reel in `index.html` (the second run is `aria-hidden` and makes the loop seamless).
+
+Keep private working files (original CVs, SUTD documents, drafts) in `uploads/`, which is git-ignored.
 
 ## Deploying (CI/CD)
 
@@ -43,7 +48,7 @@ One-time setup:
    npx vercel login
    npx vercel link
    ```
-   Answer: set up and link → yes; scope → your account; link to existing project → no; project name → `stackcollectives`. This writes `.vercel/project.json` (git-ignored) containing `orgId` and `projectId`.
+   Create a new project with a lowercase name (this one is `stackcollective`). This writes `.vercel/project.json` (git-ignored) containing `orgId` and `projectId`. If the CLI fails to connect the GitHub repository, ignore it: deploys go through GitHub Actions, not Vercel's Git integration.
 4. **Add three GitHub repository secrets**: GitHub → repo → Settings → Secrets and variables → Actions → New repository secret.
    - `VERCEL_TOKEN`: the token from step 2
    - `VERCEL_ORG_ID`: `orgId` from `.vercel/project.json`
