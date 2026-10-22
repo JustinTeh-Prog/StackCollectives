@@ -68,13 +68,13 @@ a.btn { text-decoration: none; }
 .close .row { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--leading); }
 
 /* — registration crosses shared by every framed object — */
-.plate, .cell-frame, .member, .loader-frame, .reel-tip { position: relative; border: 1px solid var(--color-divider); }
-:is(.plate, .cell-frame, .member, .loader-frame, .reel-tip) > .corner {
+.plate, .cell-frame, .member, .loader-frame, .partner-tip { position: relative; border: 1px solid var(--color-divider); }
+:is(.plate, .cell-frame, .member, .loader-frame, .partner-tip) > .corner {
   position: absolute; width: 15px; height: 15px;
   color: color-mix(in srgb, var(--color-text) 55%, transparent); pointer-events: none; }
-:is(.plate, .cell-frame, .member, .loader-frame, .reel-tip) > .corner::before {
+:is(.plate, .cell-frame, .member, .loader-frame, .partner-tip) > .corner::before {
   content: ""; position: absolute; left: 7px; top: 0; width: 1px; height: 100%; background: currentColor; }
-:is(.plate, .cell-frame, .member, .loader-frame, .reel-tip) > .corner::after {
+:is(.plate, .cell-frame, .member, .loader-frame, .partner-tip) > .corner::after {
   content: ""; position: absolute; top: 7px; left: 0; width: 100%; height: 1px; background: currentColor; }
 .corner.tl { top: -8px; left: -8px; }
 .corner.tr { top: -8px; right: -8px; }
@@ -234,43 +234,29 @@ a.btn { text-decoration: none; }
   .timeline li { grid-template-columns: 1fr; row-gap: 2px; }
 }
 
-/* — partner logo reel: two identical runs, slid -50% for a seamless loop.
-   Logos are pre-normalised 480x192 transparent tiles (equal visual area),
-   shown greyscale and brought to full colour on hover. The CSS animation is
-   the no-JS fallback; the reel script takes over (.is-live) to add the end
-   arrows, which speed the reel up in either direction while hovered. — */
-.reel-wrap { position: relative; margin-top: calc(var(--leading) - var(--half)); }
-.reel { position: relative; overflow: hidden;
-  border-block: 1px solid var(--color-divider);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-          mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); }
-.reel-track { display: flex; width: max-content; list-style: none; margin: 0; padding: 0;
-  animation: reel 45s linear infinite; }
-.reel:hover .reel-track { animation-play-state: paused; }
-.reel-track li { flex: none; padding: var(--half) calc(1.25 * var(--leading)); }
-.reel-track img { width: 180px; height: 72px; filter: grayscale(1); opacity: 0.85; transition: filter 0.2s ease, opacity 0.2s ease; }
-.reel-track li:hover img { filter: none; opacity: 1; }
-@keyframes reel { to { transform: translateX(-50%); } }
-.reel-edge { position: absolute; inset-block: 0; z-index: 1; display: none; align-items: center;
-  width: clamp(64px, 12%, 140px); }
-.reel-wrap.is-live .reel-edge { display: flex; }
-.reel-edge.prev { left: 0; justify-content: flex-start; }
-.reel-edge.next { right: 0; justify-content: flex-end; }
-.reel-edge svg { width: 36px; height: 36px; padding: 9px; flex: none;
-  border: 1px solid var(--color-divider); background: var(--color-bg); color: var(--color-accent-700);
-  opacity: 0; transition: opacity 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
-.reel-wrap:hover .reel-edge svg { opacity: 1; }
-.reel-edge:hover svg { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-bg); }
-@media (hover: none) { .reel-wrap.is-live .reel-edge { display: none; } }
-/* partner details: a framed callout over the logo being pointed at, with a
-   hairline leader down to it; filled and placed by the partner-details script */
-.reel-tip { position: absolute; z-index: 3; bottom: calc(100% + 14px);
+/* — partner logos: every organisation at once, centred rows, greyscale until
+   pointed at, tapped or focused. Logos are pre-normalised 480x192 transparent
+   tiles (equal visual area). The partner-details script opens a callout for
+   the active logo. — */
+.partners { position: relative; margin-top: calc(var(--leading) - var(--half)); }
+.logo-wall { display: flex; flex-wrap: wrap; justify-content: center; list-style: none;
+  margin: 0; padding: var(--half) 0; border-block: 1px solid var(--color-divider); }
+.logo-wall li { flex: 0 0 20%; display: flex; justify-content: center;
+  padding: var(--half); outline: none; }
+.logo-wall img { width: min(100%, 180px); height: auto; aspect-ratio: 5 / 2;
+  filter: grayscale(1); opacity: 0.7; transition: filter 0.2s ease, opacity 0.2s ease; }
+.logo-wall li:is(:hover, .is-active) img { filter: none; opacity: 1; }
+.logo-wall li:focus-visible img { filter: none; opacity: 1;
+  outline: 2px solid var(--color-accent); outline-offset: 4px; }
+@media (max-width: 880px) { .logo-wall li { flex-basis: 33.333%; } }
+/* partner details: a framed callout above the active logo (below it when the
+   nav leaves no room), with a hairline leader to the logo */
+.partner-tip { position: absolute; z-index: 3; top: 0; left: 0;
   width: min(300px, 100%); padding: var(--half) calc(var(--half) + 4px);
   background: var(--color-bg); box-shadow: var(--shadow-md); pointer-events: none; }
-.reel-tip::after { content: ""; position: absolute; top: 100%; left: var(--tip-arrow, 50%);
+.partner-tip::after { content: ""; position: absolute; top: 100%; left: var(--tip-arrow, 50%);
   width: 1px; height: 14px; background: var(--color-accent); }
-.reel-tip.is-below { bottom: auto; top: calc(100% + 14px); }
-.reel-tip.is-below::after { top: auto; bottom: 100%; }
+.partner-tip.is-below::after { top: auto; bottom: 100%; }
 .tip-kind { display: block; font-size: 11px; line-height: 16px; letter-spacing: 0.1em;
   text-transform: uppercase; font-weight: 600; font-feature-settings: "tnum" 1;
   color: var(--color-accent-700); }
@@ -278,11 +264,6 @@ a.btn { text-decoration: none; }
   font-size: 18px; line-height: var(--leading); letter-spacing: 0.02em; text-transform: uppercase; }
 .tip-text { margin: 2px 0 0; font-size: 14px; line-height: 20px;
   color: color-mix(in srgb, var(--color-text) 78%, transparent); }
-@media (prefers-reduced-motion: reduce) {
-  .reel { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
-  .reel-track { animation: none; }
-  .reel-track li[aria-hidden] { display: none; }
-}
 .note { margin: var(--half) 0 0; font-size: 13px; line-height: 20px; letter-spacing: 0.04em;
   color: color-mix(in srgb, var(--color-text) 70%, transparent); }
 .sub-label { display: block; font-size: 13px; line-height: var(--half); letter-spacing: 0.08em;
@@ -470,39 +451,26 @@ footer p { margin: 0; max-width: 48ch; }
   <section class="section" id="partners">
     <span class="kicker">03 · Our partners</span>
     <hr class="caption-rule">
-    <div class="reel-wrap">
-      <div class="reel" role="region" aria-label="Organisations we have worked with">
-        <ul class="reel-track">
-          <li><img src="assets/partners/astar.webp" alt="A*STAR" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Justin built an ASP.NET and MQTT web app for IoT devices at the Institute of Microelectronics.</span></li>
-          <li><img src="assets/partners/htx.webp" alt="HTX (Home Team Science and Technology Agency)" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Ryan designed and built PCBs for in-house autonomous drones.</span></li>
-          <li><img src="assets/partners/changi.webp" alt="Changi Airport Group" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2023</b> Phelia supported daily terminal operations as a Changi Youth Ambassador.</span></li>
-          <li><img src="assets/partners/dell.webp" alt="Dell Technologies" width="180" height="72"><span class="sr-only tip-src"><b>Award · 2026</b> Sprout, Justin’s team project, used cloud technology taught by Dell and won the Dell Technologies Innovation Award.</span></li>
-          <li><img src="assets/partners/xilinx.webp" alt="Xilinx" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021</b> Owen automated wafer-test analysis as a product engineering intern.</span></li>
-          <li><img src="assets/partners/ceva.webp" alt="CEVA Logistics" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2026</b> Edric runs and troubleshoots a KUKA SCARA robotic kitting cell.</span></li>
-          <li><img src="assets/partners/certis.webp" alt="Certis" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Benedict scheduled robot missions and prepared machine-learning data.</span></li>
-          <li><img src="assets/partners/griffinlabs.webp" alt="Griffin Labs" width="180" height="72"><span class="sr-only tip-src"><b>Internships · 2025–26</b> Owen evaluated vision-language-action models, and Edric wrote ROS2 control for the LionsBot T1.</span></li>
-          <li><img src="assets/partners/ento.webp" alt="Ento Industries" width="180" height="72"><span class="sr-only tip-src"><b>Project · 2026</b> HERMES, an automated counter for Black Soldier Fly neonates, was built with Ento Industries.</span></li>
-          <li aria-hidden="true"><img src="assets/partners/astar.webp" alt="" width="180" height="72"></li>
-          <li aria-hidden="true"><img src="assets/partners/htx.webp" alt="" width="180" height="72"></li>
-          <li aria-hidden="true"><img src="assets/partners/changi.webp" alt="" width="180" height="72"></li>
-          <li aria-hidden="true"><img src="assets/partners/dell.webp" alt="" width="180" height="72"></li>
-          <li aria-hidden="true"><img src="assets/partners/xilinx.webp" alt="" width="180" height="72"></li>
-          <li aria-hidden="true"><img src="assets/partners/ceva.webp" alt="" width="180" height="72"></li>
-          <li aria-hidden="true"><img src="assets/partners/certis.webp" alt="" width="180" height="72"></li>
-          <li aria-hidden="true"><img src="assets/partners/griffinlabs.webp" alt="" width="180" height="72"></li>
-          <li aria-hidden="true"><img src="assets/partners/ento.webp" alt="" width="180" height="72"></li>
-        </ul>
-      </div>
-      <span class="reel-edge prev" data-dir="-1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="m15 18-6-6 6-6"/></svg></span>
-      <span class="reel-edge next" data-dir="1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="m9 18 6-6-6-6"/></svg></span>
-      <div class="reel-tip" aria-hidden="true" hidden>
+    <div class="partners">
+      <ul class="logo-wall" aria-label="Organisations we have worked with">
+        <li tabindex="0"><img src="assets/partners/astar.webp" alt="A*STAR" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Justin built an ASP.NET and MQTT web app for IoT devices at the Institute of Microelectronics.</span></li>
+        <li tabindex="0"><img src="assets/partners/htx.webp" alt="HTX (Home Team Science and Technology Agency)" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Ryan designed and built PCBs for in-house autonomous drones.</span></li>
+        <li tabindex="0"><img src="assets/partners/changi.webp" alt="Changi Airport Group" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2023</b> Phelia supported daily terminal operations as a Changi Youth Ambassador.</span></li>
+        <li tabindex="0"><img src="assets/partners/dell.webp" alt="Dell Technologies" width="180" height="72"><span class="sr-only tip-src"><b>Award · 2026</b> Sprout, Justin’s team project, used cloud technology taught by Dell and won the Dell Technologies Innovation Award.</span></li>
+        <li tabindex="0"><img src="assets/partners/xilinx.webp" alt="Xilinx" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021</b> Owen automated wafer-test analysis as a product engineering intern.</span></li>
+        <li tabindex="0"><img src="assets/partners/ceva.webp" alt="CEVA Logistics" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2026</b> Edric runs and troubleshoots a KUKA SCARA robotic kitting cell.</span></li>
+        <li tabindex="0"><img src="assets/partners/certis.webp" alt="Certis" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Benedict scheduled robot missions and prepared machine-learning data.</span></li>
+        <li tabindex="0"><img src="assets/partners/griffinlabs.webp" alt="Griffin Labs" width="180" height="72"><span class="sr-only tip-src"><b>Internships · 2025–26</b> Owen evaluated vision-language-action models, and Edric wrote ROS2 control for the LionsBot T1.</span></li>
+        <li tabindex="0"><img src="assets/partners/ento.webp" alt="Ento Industries" width="180" height="72"><span class="sr-only tip-src"><b>Project · 2026</b> HERMES, an automated counter for Black Soldier Fly neonates, was built with Ento Industries.</span></li>
+      </ul>
+      <div class="partner-tip" aria-hidden="true" hidden>
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
         <span class="tip-kind"></span>
         <span class="tip-org"></span>
         <p class="tip-text"></p>
       </div>
     </div>
-    <p class="note">Organisations our members have interned with or built projects for.</p>
+    <p class="note">Organisations our members have interned with or built projects for. Hover over or tap a logo for details.</p>
 
     <span class="sub-label">Selected projects</span>
     <div class="cells two">
@@ -794,111 +762,64 @@ footer p { margin: 0; max-width: 48ch; }
 
 </div>
 <script>
-// Partner reel: drifts left on its own, pauses while the pointer is over the
-// logos, and runs fast in either direction while the pointer rests on an end
-// arrow. Speed changes ease in rather than jump. With reduced motion the CSS
-// fallback (a static, scrollable row) stays in place.
+// Partner details: pointing at, tapping or focusing a logo brings it to full
+// colour and opens a small callout saying what the team did with that
+// organisation. The text comes from each logo's visually hidden .tip-src,
+// which screen readers read in place, so the callout itself is hidden from
+// them.
 (() => {
-  const wrap = document.querySelector('.reel-wrap');
-  if (!wrap || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const track = wrap.querySelector('.reel-track');
-  const LOOP_SECONDS = 45;  // one full run at cruising speed, as in the CSS
-  const FAST = 6;           // multiple of cruising speed on an end arrow
-  let loop = track.scrollWidth / 2;
-  let pos = 0, speed = 1, target = 1;  // speeds are multiples of cruising
-  let last = 0, running = false;
-
-  new ResizeObserver(() => { loop = track.scrollWidth / 2; }).observe(track);
-  track.style.animation = 'none';
-  wrap.classList.add('is-live');
-
-  wrap.addEventListener('pointermove', (e) => {
-    if (e.pointerType === 'touch') return;
-    const edge = e.target.closest('.reel-edge');
-    target = edge ? FAST * Number(edge.dataset.dir) : 0;
-  });
-  wrap.addEventListener('pointerleave', () => { target = 1; });
-
-  const frame = (now) => {
-    if (!running) return;
-    const dt = Math.min((now - last) / 1000, 0.1);
-    last = now;
-    speed += (target - speed) * Math.min(1, dt * 6);
-    pos = (((pos + speed * (loop / LOOP_SECONDS) * dt) % loop) + loop) % loop;
-    track.style.transform = `translateX(${-pos}px)`;
-    requestAnimationFrame(frame);
-  };
-  // Only animate while the reel is on screen.
-  new IntersectionObserver(([entry]) => {
-    if (entry.isIntersecting === running) return;
-    running = entry.isIntersecting;
-    if (running) { last = performance.now(); requestAnimationFrame(frame); }
-  }).observe(wrap);
-})();
-</script>
-<script>
-// Partner details: pointing at (or tapping) a logo in the reel opens a small
-// callout saying what the team did with that organisation. The text comes
-// from each logo's visually hidden .tip-src, which screen readers read in
-// place, so the callout itself is hidden from them. The callout follows its
-// logo while the reel eases to a stop, and closes once the logo leaves view.
-(() => {
-  const wrap = document.querySelector('.reel-wrap');
-  const tip = wrap?.querySelector('.reel-tip');
+  const wall = document.querySelector('.partners');
+  const tip = wall?.querySelector('.partner-tip');
   if (!tip) return;
-  const items = [...wrap.querySelectorAll('.reel-track li')];
-  const sources = items.filter((li) => li.querySelector('.tip-src'));
   const nav = document.querySelector('.nav');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let current = null, frame = 0;
-
-  const fill = (li) => {
-    // The second, aria-hidden run of logos repeats the first in order.
-    const source = sources[items.indexOf(li) % sources.length];
-    const detail = source.querySelector('.tip-src');
-    tip.querySelector('.tip-kind').textContent = detail.querySelector('b').textContent;
-    tip.querySelector('.tip-org').textContent = source.querySelector('img').alt;
-    tip.querySelector('.tip-text').textContent = detail.lastChild.textContent.trim();
-  };
-
-  const place = () => {
-    const w = wrap.getBoundingClientRect(), r = current.getBoundingClientRect();
-    const centre = r.left + r.width / 2 - w.left;
-    if (centre < 0 || centre > w.width) { hide(); return; }
-    const width = tip.offsetWidth;
-    const left = Math.min(Math.max(centre - width / 2, 0), w.width - width);
-    tip.style.left = `${left}px`;
-    tip.style.setProperty('--tip-arrow', `${centre - left}px`);
-    const room = w.top - (nav ? nav.getBoundingClientRect().bottom : 0);
-    tip.classList.toggle('is-below', room < tip.offsetHeight + 24);
-    frame = requestAnimationFrame(place);
-  };
+  const GAP = 14;  // length of the leader line between callout and logo
+  let current = null;
 
   const show = (li) => {
     if (li === current) return;
+    current?.classList.remove('is-active');
     current = li;
-    fill(li);
+    li.classList.add('is-active');
+    const detail = li.querySelector('.tip-src');
+    tip.querySelector('.tip-kind').textContent = detail.querySelector('b').textContent;
+    tip.querySelector('.tip-org').textContent = li.querySelector('img').alt;
+    tip.querySelector('.tip-text').textContent = detail.lastChild.textContent.trim();
     tip.hidden = false;
-    cancelAnimationFrame(frame);
-    place();
+
+    const w = wall.getBoundingClientRect(), r = li.getBoundingClientRect();
+    const centre = r.left + r.width / 2 - w.left;
+    const left = Math.min(Math.max(centre - tip.offsetWidth / 2, 0), w.width - tip.offsetWidth);
+    const room = r.top - (nav ? nav.getBoundingClientRect().bottom : 0);
+    const below = room < tip.offsetHeight + GAP + 8;
+    tip.classList.toggle('is-below', below);
+    tip.style.left = `${left}px`;
+    tip.style.top = `${below ? r.bottom - w.top + GAP : r.top - w.top - tip.offsetHeight - GAP}px`;
+    tip.style.setProperty('--tip-arrow', `${centre - left}px`);
     if (!reduced.matches) tip.animate(
       [{ opacity: 0, clipPath: 'inset(0 100% 0 0)' }, { opacity: 1, clipPath: 'inset(-8px)' }],
       { duration: 200, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)' });
   };
 
   const hide = () => {
+    current?.classList.remove('is-active');
     current = null;
     tip.hidden = true;
-    cancelAnimationFrame(frame);
   };
 
-  wrap.addEventListener('pointerover', (e) => {
-    const li = e.target.closest('.reel-track li');
+  wall.addEventListener('pointerover', (e) => {
+    const li = e.target.closest('.logo-wall li');
     if (li) show(li);
     else hide();
   });
-  wrap.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') hide(); });
-  document.addEventListener('pointerdown', (e) => { if (!wrap.contains(e.target)) hide(); });
+  wall.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') hide(); });
+  wall.addEventListener('focusin', (e) => {
+    const li = e.target.closest('.logo-wall li');
+    if (li) show(li);
+  });
+  wall.addEventListener('focusout', (e) => { if (!wall.contains(e.relatedTarget)) hide(); });
+  document.addEventListener('pointerdown', (e) => { if (!wall.contains(e.target)) hide(); });
+  addEventListener('resize', hide);
 })();
 </script>
 <script>

@@ -7,6 +7,8 @@ node_modules/
 uploads/
 partnerlogos/
 CapstoneWeb_HANDOVER.md
+CAPSTONE_CONTEXT_HANDOVER.md
+VERSION_LOG.md
 .playwright-mcp/
 *.lnk
 
@@ -14,4 +16,7 @@ CapstoneWeb_HANDOVER.md
 .vercel/
 .env*
 
-
+# Operating-system clutter
+Thumbs.db
+desktop.ini
+.DS_Store

@@ -32,7 +32,7 @@ npm run preview     # builds dist/ and serves it at http://localhost:3000
 - **Copy**: edit `index.html` directly.
 - **Headshot**: overwrite `assets/team/<name>.webp` with a square image (640px or larger).
 - **Resume**: replace the file in `assets/cv/` and keep the same filename, or update the card's link. Everything in `assets/` is public, so remove phone numbers and home addresses first.
-- **Partner logo**: add a 480x192 transparent `.webp` to `assets/partners/`, then add it to **both** runs of the reel in `index.html` (the second run is `aria-hidden` and makes the loop seamless). In the first run, give it a `<span class="sr-only tip-src"><b>Kind · year</b> One sentence.</span>` after the image; that text fills the hover popup.
+- **Partner logo**: add a 480x192 transparent `.webp` to `assets/partners/`, then add an `<li tabindex="0">` for it to the logo wall in `index.html`: the image, then `<span class="sr-only tip-src"><b>Kind · year</b> One sentence.</span>`, which fills the hover callout.
 - **Project poster or slides**: compress the PDF before adding it to `assets/projects/` (downsample images to about 150 dpi; aim for under 7 MB), then link the project title to it with `target="_blank"`. Everything in this repo stays in git history, so large files are expensive to remove later.
 
 Keep private working files (original CVs, SUTD documents, drafts) in `uploads/`, which is git-ignored.

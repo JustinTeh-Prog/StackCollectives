@@ -22,12 +22,12 @@ The page reads as an engineering drawing set:
 
 ## Motion
 
-Motion is limited to the load-in, the partner reel and responses to user actions.
+Motion is limited to the load-in and responses to user actions.
 
 - **Load-in**: registration crosses converge on the wordmark, the title scans in, a hairline plots across with a percentage counter, then the sheet fades into the page. It is pure CSS, ends by 1.5s and never blocks input.
-- **Partner reel**: two identical runs of logos drift left under an edge-fade mask, one run per 45s. Hovering the logos pauses the reel; hovering the square arrow at either end runs it six times faster in that direction, with speed changes eased. Logos are greyscale at rest and full colour on hover. Pointing at (or tapping) a logo opens a framed callout above it, with a hairline leader down to the logo, saying what the team did there; it flips below the reel when there is no room under the nav. The callout text lives in a visually hidden span on each logo, so screen readers get it too. The reel script drives this; without JavaScript a CSS animation runs instead, and the arrows are hidden on touch screens.
+- **Partner logos**: all nine show at once in centred rows (five per row on desktop, three on tablets and phones), greyscale at 70% opacity. Pointing at, tapping or focusing a logo brings it to full colour and opens a framed callout above it (below it when the nav leaves no room), with a hairline leader to the logo, saying what the team did there. The callout text lives in a visually hidden span on each logo, so screen readers get it too.
 - **Team cards**: opening a card, the portrait flies from its bubble into the card's photo slot and squares off (460ms). The frame then unrolls from the photo and the text fades in, ending by about 0.76s. Closing reverses this: the text fades, the frame rolls back to the photo, and the portrait flies home. Switching members sends one portrait home while the next flies in. The space below eases to the new height throughout. A click mid-animation snaps to the end state and starts the next change; Escape closes the open card.
-- **Reduced motion**: the loader is skipped, the reel stops and becomes a single scrollable run, and the card animation is disabled.
+- **Reduced motion**: the loader is skipped, partner callouts appear without their wipe, and the team-card animation is disabled.
 
 ## Content rules
 
