@@ -3,6 +3,7 @@ dist/
 node_modules/
 
 # Local working material: private files that must never be published
+0_additional_context/
 uploads/
 partnerlogos/
 CapstoneWeb_HANDOVER.md
@@ -12,3 +13,5 @@ CapstoneWeb_HANDOVER.md
 # Vercel CLI link and environment files
 .vercel/
 .env*
+
+

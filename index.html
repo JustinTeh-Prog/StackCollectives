@@ -26,6 +26,8 @@ body { margin: 0; text-wrap: pretty; }
 a { color: var(--color-accent-700); }
 a:hover { color: var(--color-accent-900); }
 a.btn { text-decoration: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; }
 .wrap { max-width: 1200px; margin: 0 auto; padding: 0 var(--edge); }
 .nav { position: sticky; top: 0; z-index: 100;
   background: var(--color-bg);
@@ -66,13 +68,13 @@ a.btn { text-decoration: none; }
 .close .row { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--leading); }
 
 /* — registration crosses shared by every framed object — */
-.plate, .cell-frame, .member, .loader-frame { position: relative; border: 1px solid var(--color-divider); }
-:is(.plate, .cell-frame, .member, .loader-frame) > .corner {
+.plate, .cell-frame, .member, .loader-frame, .reel-tip { position: relative; border: 1px solid var(--color-divider); }
+:is(.plate, .cell-frame, .member, .loader-frame, .reel-tip) > .corner {
   position: absolute; width: 15px; height: 15px;
   color: color-mix(in srgb, var(--color-text) 55%, transparent); pointer-events: none; }
-:is(.plate, .cell-frame, .member, .loader-frame) > .corner::before {
+:is(.plate, .cell-frame, .member, .loader-frame, .reel-tip) > .corner::before {
   content: ""; position: absolute; left: 7px; top: 0; width: 1px; height: 100%; background: currentColor; }
-:is(.plate, .cell-frame, .member, .loader-frame) > .corner::after {
+:is(.plate, .cell-frame, .member, .loader-frame, .reel-tip) > .corner::after {
   content: ""; position: absolute; top: 7px; left: 0; width: 100%; height: 1px; background: currentColor; }
 .corner.tl { top: -8px; left: -8px; }
 .corner.tr { top: -8px; right: -8px; }
@@ -133,6 +135,13 @@ a.btn { text-decoration: none; }
   color: color-mix(in srgb, var(--color-text) 78%, transparent); }
 .points li::before { content: ""; position: absolute; left: 0; top: 13px;
   width: 6px; height: 6px; background: var(--color-accent); }
+.cell-frame h3 a { color: inherit; text-decoration: none; }
+.cell-frame h3 a:hover { color: var(--color-accent-700); }
+.cell-frame h3 .ext { font-size: 0.7em; color: var(--color-accent-700); }
+.cell-more { display: inline-flex; gap: 6px; margin-top: var(--leading);
+  font-size: 12px; line-height: 20px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
+  color: var(--color-accent-700); text-decoration: none; }
+.cell-more:hover { color: var(--color-accent-900); text-decoration: underline; }
 
 /* — the team: a row of portrait bubbles; each opens its member card in the
    stage below. Without JS the bubbles are anchor links and every card shows. — */
@@ -253,6 +262,22 @@ a.btn { text-decoration: none; }
 .reel-wrap:hover .reel-edge svg { opacity: 1; }
 .reel-edge:hover svg { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-bg); }
 @media (hover: none) { .reel-wrap.is-live .reel-edge { display: none; } }
+/* partner details: a framed callout over the logo being pointed at, with a
+   hairline leader down to it; filled and placed by the partner-details script */
+.reel-tip { position: absolute; z-index: 3; bottom: calc(100% + 14px);
+  width: min(300px, 100%); padding: var(--half) calc(var(--half) + 4px);
+  background: var(--color-bg); box-shadow: var(--shadow-md); pointer-events: none; }
+.reel-tip::after { content: ""; position: absolute; top: 100%; left: var(--tip-arrow, 50%);
+  width: 1px; height: 14px; background: var(--color-accent); }
+.reel-tip.is-below { bottom: auto; top: calc(100% + 14px); }
+.reel-tip.is-below::after { top: auto; bottom: 100%; }
+.tip-kind { display: block; font-size: 11px; line-height: 16px; letter-spacing: 0.1em;
+  text-transform: uppercase; font-weight: 600; font-feature-settings: "tnum" 1;
+  color: var(--color-accent-700); }
+.tip-org { display: block; margin-top: 2px; font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 18px; line-height: var(--leading); letter-spacing: 0.02em; text-transform: uppercase; }
+.tip-text { margin: 2px 0 0; font-size: 14px; line-height: 20px;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent); }
 @media (prefers-reduced-motion: reduce) {
   .reel { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
   .reel-track { animation: none; }
@@ -403,7 +428,7 @@ footer p { margin: 0; max-width: 48ch; }
 
   <section class="hero">
     <h1 class="display"><span class="line">Built to work.</span> <span class="line">Made to matter.</span></h1>
-    <p class="sub">We’re seven SUTD engineers who take your problem personally.
+    <p class="sub">We’re seven SUTD engineers who take your problem seriously.
     From first sketch to production-ready build, we’re with you every step of the way.</p>
   </section>
 
@@ -419,13 +444,14 @@ footer p { margin: 0; max-width: 48ch; }
           <li>PCB, embedded &amp; firmware</li>
           <li>Full-stack software &amp; machine learning</li>
         </ul>
+        <a class="cell-more" href="#skills">See more <span aria-hidden="true">↓</span></a>
       </div>
       <div class="cell-frame">
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
         <h3>Grounded in real experience</h3>
         <ul class="points">
           <li>Internships at A*STAR, HTX, Xilinx, Griffin Labs, CEVA Logistics, Certis and Changi Airport</li>
-          <li>6 of 7 members hold engineering diplomas from before SUTD</li>
+          <li>Backed by a strong technical foundation, with most members holding engineering diplomas</li>
           <li>Real client work delivered, incl. a filed SG provisional patent</li>
         </ul>
       </div>
@@ -433,9 +459,9 @@ footer p { margin: 0; max-width: 48ch; }
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
         <h3>Delivering real impact</h3>
         <ul class="points">
-          <li>Discovery first: we immerse in your users’ world to understand the whys</li>
-          <li>Build fast, test faster, refine well</li>
-          <li>All to deliver a production-ready solution</li>
+          <li>We immerse ourselves in your users’ world to understand the whys first</li>
+          <li>We build fast, test faster, and refine well</li>
+          <li>We deliver a production-ready solution that meets real needs</li>
         </ul>
       </div>
     </div>
@@ -447,19 +473,17 @@ footer p { margin: 0; max-width: 48ch; }
     <div class="reel-wrap">
       <div class="reel" role="region" aria-label="Organisations we have worked with">
         <ul class="reel-track">
-          <li><img src="assets/partners/astar.webp" alt="A*STAR" width="180" height="72"></li>
-          <li><img src="assets/partners/htx.webp" alt="HTX (Home Team Science and Technology Agency)" width="180" height="72"></li>
-          <li><img src="assets/partners/stengineering.webp" alt="ST Engineering" width="180" height="72"></li>
-          <li><img src="assets/partners/changi.webp" alt="Changi Airport Group" width="180" height="72"></li>
-          <li><img src="assets/partners/dell.webp" alt="Dell Technologies" width="180" height="72"></li>
-          <li><img src="assets/partners/xilinx.webp" alt="Xilinx" width="180" height="72"></li>
-          <li><img src="assets/partners/ceva.webp" alt="CEVA Logistics" width="180" height="72"></li>
-          <li><img src="assets/partners/certis.webp" alt="Certis" width="180" height="72"></li>
-          <li><img src="assets/partners/griffinlabs.webp" alt="Griffin Labs" width="180" height="72"></li>
-          <li><img src="assets/partners/ento.webp" alt="Ento Industries" width="180" height="72"></li>
+          <li><img src="assets/partners/astar.webp" alt="A*STAR" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Justin built an ASP.NET and MQTT web app for IoT devices at the Institute of Microelectronics.</span></li>
+          <li><img src="assets/partners/htx.webp" alt="HTX (Home Team Science and Technology Agency)" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Ryan designed and built PCBs for in-house autonomous drones.</span></li>
+          <li><img src="assets/partners/changi.webp" alt="Changi Airport Group" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2023</b> Phelia supported daily terminal operations as a Changi Youth Ambassador.</span></li>
+          <li><img src="assets/partners/dell.webp" alt="Dell Technologies" width="180" height="72"><span class="sr-only tip-src"><b>Award · 2026</b> Sprout, Justin’s team project, used cloud technology taught by Dell and won the Dell Technologies Innovation Award.</span></li>
+          <li><img src="assets/partners/xilinx.webp" alt="Xilinx" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021</b> Owen automated wafer-test analysis as a product engineering intern.</span></li>
+          <li><img src="assets/partners/ceva.webp" alt="CEVA Logistics" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2026</b> Edric runs and troubleshoots a KUKA SCARA robotic kitting cell.</span></li>
+          <li><img src="assets/partners/certis.webp" alt="Certis" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Benedict scheduled robot missions and prepared machine-learning data.</span></li>
+          <li><img src="assets/partners/griffinlabs.webp" alt="Griffin Labs" width="180" height="72"><span class="sr-only tip-src"><b>Internships · 2025–26</b> Owen evaluated vision-language-action models, and Edric wrote ROS2 control for the LionsBot T1.</span></li>
+          <li><img src="assets/partners/ento.webp" alt="Ento Industries" width="180" height="72"><span class="sr-only tip-src"><b>Project · 2026</b> HERMES, an automated counter for Black Soldier Fly neonates, was built with Ento Industries.</span></li>
           <li aria-hidden="true"><img src="assets/partners/astar.webp" alt="" width="180" height="72"></li>
           <li aria-hidden="true"><img src="assets/partners/htx.webp" alt="" width="180" height="72"></li>
-          <li aria-hidden="true"><img src="assets/partners/stengineering.webp" alt="" width="180" height="72"></li>
           <li aria-hidden="true"><img src="assets/partners/changi.webp" alt="" width="180" height="72"></li>
           <li aria-hidden="true"><img src="assets/partners/dell.webp" alt="" width="180" height="72"></li>
           <li aria-hidden="true"><img src="assets/partners/xilinx.webp" alt="" width="180" height="72"></li>
@@ -471,6 +495,12 @@ footer p { margin: 0; max-width: 48ch; }
       </div>
       <span class="reel-edge prev" data-dir="-1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="m15 18-6-6 6-6"/></svg></span>
       <span class="reel-edge next" data-dir="1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="m9 18 6-6-6-6"/></svg></span>
+      <div class="reel-tip" aria-hidden="true" hidden>
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <span class="tip-kind"></span>
+        <span class="tip-org"></span>
+        <p class="tip-text"></p>
+      </div>
     </div>
     <p class="note">Organisations our members have interned with or built projects for.</p>
 
@@ -478,27 +508,28 @@ footer p { margin: 0; max-width: 48ch; }
     <div class="cells two">
       <div class="cell-frame">
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-        <h3>HERMES</h3>
+        <h3><a href="assets/projects/hermes-poster.pdf" target="_blank" rel="noopener">HERMES <span class="ext" aria-hidden="true">↗</span><span class="sr-only"> (project poster, PDF, opens in a new tab)</span></a></h3>
         <span class="meta">2026 · with Ento Industries</span>
         <p>An automated counter for Black Soldier Fly neonates: deformable funnel, vibration-tuned ramp and an event-camera vision pipeline. 98.6% counting accuracy with 100% neonate survival, at S$1,120 a unit, under 1% of the cost of the commercial alternative.</p>
       </div>
       <div class="cell-frame">
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-        <h3>InVest</h3>
-        <span class="meta">2026 · 3D design project</span>
-        <p>A smart navigation vest for the visually impaired: an ESP32-CAM captures bus numbers, an OCR pipeline reads them over wireless, and vibration motors steer the wearer and flag arrivals.</p>
+        <h3><a href="assets/projects/sprout-slides.pdf" target="_blank" rel="noopener">Sprout <span class="ext" aria-hidden="true">↗</span><span class="sr-only"> (project slides, PDF, opens in a new tab)</span></a></h3>
+        <span class="meta">2026 · SUTD 1D core project</span>
+        <p>A web platform that turns a garden visit into a collecting game. Scan or upload a plant photo, and a generative-AI pipeline identifies the species and draws a pixel-art “Plantemon” to collect and battle. Designed for families at Gardens by the Bay, it won the Dell Technologies Innovation Award.</p>
+        <a class="cell-more" href="https://sprout-web-app-jet.vercel.app/" target="_blank" rel="noopener">Try the web app <span aria-hidden="true">↗</span></a>
       </div>
       <div class="cell-frame">
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-        <h3>SensOri</h3>
-        <span class="meta">2026 · 3D design project</span>
-        <p>A sensing system that lets caregivers plan outings with confidence, using an ESP32 with radar, sound and light sensors monitoring crowd density, noise and glare in real time.</p>
+        <h3><a href="assets/projects/sensori-poster.pdf" target="_blank" rel="noopener">SensOri <span class="ext" aria-hidden="true">↗</span><span class="sr-only"> (project poster, PDF, opens in a new tab)</span></a></h3>
+        <span class="meta">2026 · SUTD 3D design project</span>
+        <p>A real-time sensory map for autism-friendly outings. ESP32 nodes with radar, sound and light sensors score crowd density, noise and glare at each location, and a model forecasts the levels ahead, so caregivers can plan with confidence.</p>
       </div>
       <div class="cell-frame">
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-        <h3>ADL Data Acquisition</h3>
+        <h3><a href="assets/projects/adl-poster.pdf" target="_blank" rel="noopener">Interactive Assessment Device for ADL <span class="ext" aria-hidden="true">↗</span><span class="sr-only"> (project poster, PDF, opens in a new tab)</span></a></h3>
         <span class="meta">2021–22 · TP major project</span>
-        <p>Computer-vision capture of activities of daily living for objective patient monitoring, built on OpenCV, Pygame and SQLite. Filed as SG provisional patent 10202105829Q.</p>
+        <p>A portable rehabilitation device that measures hand force and elbow motion as patients carry out everyday tasks, combining force sensors, LED-marker tracking and an augmented-reality game. Built on OpenCV, Pygame and SQLite, and filed as SG provisional patent 10202105829Q.</p>
       </div>
     </div>
   </section>
@@ -527,11 +558,12 @@ footer p { margin: 0; max-width: 48ch; }
             <h3 id="member-justin-name">Justin Teh</h3>
             <span class="m-role">Software &amp; Systems Lead</span>
             <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
-            <p class="m-about">Works on software that connects to hardware and data. Built an ASP.NET and MQTT web app for IoT devices at A*STAR’s Institute of Microelectronics, and a computer-vision system for tracking patients’ daily activities that was filed as a Singapore provisional patent. First point of contact for partners.</p>
+            <p class="m-about">Works on software that connects to hardware and data. Built an ASP.NET and MQTT web app for IoT devices at A*STAR’s Institute of Microelectronics, and a computer-vision system for tracking patients’ daily activities that was filed as a Singapore provisional patent. Justin is also comfortable with agentic workflows and applied AI.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
               <li>Python · C++ (Arduino/ESP32) · Java</li>
               <li>Full-stack ASP.NET MVC · HTML/CSS/JS · MQTT IoT</li>
+              <li>Machine learning · Applied AI · Agentic workflows</li>
               <li>OpenCV · KNIME · Seaborn · Matplotlib</li>
               <li>Fusion 360 · 3D printing · Through-hole soldering</li>
             </ul>
@@ -546,7 +578,7 @@ footer p { margin: 0; max-width: 48ch; }
             <h3 id="member-owen-name">Owen Yeo</h3>
             <span class="m-role">AI &amp; Machine Learning</span>
             <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
-            <p class="m-about">Builds evaluation and data tooling for robot AI. At Griffin Labs, designed test workflows for vision-language-action models and wrote dataset tools that cut down manual preprocessing. Before SUTD, automated wafer-test analysis at Xilinx.</p>
+            <p class="m-about">Builds evaluation and data tooling for robot AI. At Griffin Labs, designed test workflows for vision-language-action models and wrote dataset tools that cut down manual preprocessing. Before SUTD, Owen automated wafer-test analysis at Xilinx.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
               <li>Python · Java · C# · VBA</li>
@@ -583,7 +615,7 @@ footer p { margin: 0; max-width: 48ch; }
             <h3 id="member-ryan-name">Lim Ryan Ryutaro</h3>
             <span class="m-role">Embedded &amp; PCB Design</span>
             <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
-            <p class="m-about">Designs, mills and assembles PCBs, then writes the firmware that runs on them. At HTX, built PCBs for in-house autonomous drones at up to 50% lower cost. As an RSAF crew chief, led ground crew through about 1,000 aircraft missions.</p>
+            <p class="m-about">Designs, mills and assembles PCBs, then writes the firmware that runs on them. At HTX, Ryan built PCBs for in-house autonomous drones at up to 50% lower cost. As an RSAF crew chief, led ground crew through about 1,000 aircraft missions.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
               <li>EAGLE · KiCAD · LPKF PCB milling</li>
@@ -621,7 +653,7 @@ footer p { margin: 0; max-width: 48ch; }
             <h3 id="member-benedict-name">Benedict Antoni</h3>
             <span class="m-role">Research &amp; Fabrication</span>
             <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
-            <p class="m-about">Works between the research lab and the machine shop. Ran up to 200 plasma surface-treatment tests for a composite fabrication project under UROP, and graduated top of the NYP Robotics &amp; Mechatronics diploma with the Festo Gold Medal.</p>
+            <p class="m-about">Works between the research lab and the machine shop. Ran up to 200 plasma surface-treatment tests for a composite fabrication project under <a href="https://www.sutd.edu.sg/temasek-labs/student-opportunities/urop-opportunities-for-sutd-undergraduates/" target="_blank" rel="noopener">SUTD’s UROP</a>, and graduated top of the NYP Robotics &amp; Mechatronics diploma with the Festo Gold Medal.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
               <li>SolidWorks · Inventor · Fusion 360</li>
@@ -640,7 +672,7 @@ footer p { margin: 0; max-width: 48ch; }
             <h3 id="member-edric-name">Edric Lum</h3>
             <span class="m-role">Robotics &amp; Automation</span>
             <button class="m-close" type="button">See less <span aria-hidden="true">−</span></button>
-            <p class="m-about">Builds robot systems end to end, from wiring and E‑stop safety circuits to ROS2 software. At Griffin Labs, wrote the ROS2 odometry and control packages for the LionsBot T1, a dual-arm swerve-drive robot shortlisted for the Amsterdam Innovation Award at Interclean 2026. Also runs and troubleshoots a KUKA SCARA kitting cell at CEVA Logistics.</p>
+            <p class="m-about">Builds robot systems end to end, from wiring and E‑stop safety circuits to ROS2 software. At Griffin Labs, Edric wrote the ROS2 odometry and control packages for the LionsBot T1, a dual-arm swerve-drive robot shortlisted for the Amsterdam Innovation Award at Interclean 2026. Edric also runs and troubleshoots a KUKA SCARA kitting cell at CEVA Logistics.</p>
             <span class="m-label">Key skills</span>
             <ul class="m-skills">
               <li>ROS2 · URDF · Swerve-drive odometry &amp; control</li>
@@ -661,8 +693,7 @@ footer p { margin: 0; max-width: 48ch; }
     <div class="plate">
       <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
       <header class="title-block">
-        <span class="tb-cell">CAP-27</span>
-        <span class="tb-cell">Sheet 01 of 01</span>
+        <span class="tb-cell">Capstone 2027/2028</span>
       </header>
       <table class="table spec">
         <colgroup><col class="c-num"><col class="c-prop"><col class="c-val"><col class="c-rem"></colgroup>
@@ -673,7 +704,7 @@ footer p { margin: 0; max-width: 48ch; }
           <tr><td class="s-num">01</td><td class="s-prop">Participation fee</td><td class="s-val">S$6,000</td><td class="s-rem">Per project team, including GST, paid by your organisation to SUTD</td></tr>
           <tr><td class="s-num">02</td><td class="s-prop">SUTD project resources</td><td class="s-val">≤ S$4,000</td><td class="s-rem">Provided by SUTD for the project’s allowable resources</td></tr>
           <tr><td class="s-num">03</td><td class="s-prop">IP &amp; generated materials</td><td class="s-val">Yours</td><td class="s-rem">All IP belongs to the partner organisation</td></tr>
-          <tr><td class="s-num">04</td><td class="s-prop">Committed window</td><td class="s-val">8 months</td><td class="s-rem">Two academic terms, September 2027 to April 2028</td></tr>
+          <tr><td class="s-num">04</td><td class="s-prop">Capstone period</td><td class="s-val">8 months</td><td class="s-rem"><a href="https://www.sutd.edu.sg/education/undergraduate/academic-calendar/overview/ay2024-onwards/" target="_blank" rel="noopener">Academic terms 7 &amp; 8</a>, September 2027 to April 2028</td></tr>
         </tbody>
       </table>
       <p class="sheet-note">We’re happy to do site visits and employee interviews, and to learn any specialised software the project needs.<br>Programme queries: <a href="mailto:capstone@sutd.edu.sg">capstone@sutd.edu.sg</a>.</p>
@@ -733,6 +764,7 @@ footer p { margin: 0; max-width: 48ch; }
           <tr><td class="d-domain">Data &amp; machine learning</td><td>OpenCV · OpenMV · YOLO · VLA model evaluation · KNIME</td></tr>
           <tr><td class="d-domain">Fabrication &amp; testing</td><td>3D printing (FDM/SLA) · CNC mill &amp; lathe · Structured test campaigns</td></tr>
           <tr><td class="d-domain">Project ops</td><td>Design reviews (SRR/SDR/PDR) · Logistics · Client communications</td></tr>
+          <tr><td class="d-domain">And beyond…</td><td>Currently “stacking” up more through credit-bearing internships and SUTD electives</td></tr>
         </tbody>
       </table>
     </div>
@@ -802,6 +834,71 @@ footer p { margin: 0; max-width: 48ch; }
     running = entry.isIntersecting;
     if (running) { last = performance.now(); requestAnimationFrame(frame); }
   }).observe(wrap);
+})();
+</script>
+<script>
+// Partner details: pointing at (or tapping) a logo in the reel opens a small
+// callout saying what the team did with that organisation. The text comes
+// from each logo's visually hidden .tip-src, which screen readers read in
+// place, so the callout itself is hidden from them. The callout follows its
+// logo while the reel eases to a stop, and closes once the logo leaves view.
+(() => {
+  const wrap = document.querySelector('.reel-wrap');
+  const tip = wrap?.querySelector('.reel-tip');
+  if (!tip) return;
+  const items = [...wrap.querySelectorAll('.reel-track li')];
+  const sources = items.filter((li) => li.querySelector('.tip-src'));
+  const nav = document.querySelector('.nav');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  let current = null, frame = 0;
+
+  const fill = (li) => {
+    // The second, aria-hidden run of logos repeats the first in order.
+    const source = sources[items.indexOf(li) % sources.length];
+    const detail = source.querySelector('.tip-src');
+    tip.querySelector('.tip-kind').textContent = detail.querySelector('b').textContent;
+    tip.querySelector('.tip-org').textContent = source.querySelector('img').alt;
+    tip.querySelector('.tip-text').textContent = detail.lastChild.textContent.trim();
+  };
+
+  const place = () => {
+    const w = wrap.getBoundingClientRect(), r = current.getBoundingClientRect();
+    const centre = r.left + r.width / 2 - w.left;
+    if (centre < 0 || centre > w.width) { hide(); return; }
+    const width = tip.offsetWidth;
+    const left = Math.min(Math.max(centre - width / 2, 0), w.width - width);
+    tip.style.left = `${left}px`;
+    tip.style.setProperty('--tip-arrow', `${centre - left}px`);
+    const room = w.top - (nav ? nav.getBoundingClientRect().bottom : 0);
+    tip.classList.toggle('is-below', room < tip.offsetHeight + 24);
+    frame = requestAnimationFrame(place);
+  };
+
+  const show = (li) => {
+    if (li === current) return;
+    current = li;
+    fill(li);
+    tip.hidden = false;
+    cancelAnimationFrame(frame);
+    place();
+    if (!reduced.matches) tip.animate(
+      [{ opacity: 0, clipPath: 'inset(0 100% 0 0)' }, { opacity: 1, clipPath: 'inset(-8px)' }],
+      { duration: 200, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)' });
+  };
+
+  const hide = () => {
+    current = null;
+    tip.hidden = true;
+    cancelAnimationFrame(frame);
+  };
+
+  wrap.addEventListener('pointerover', (e) => {
+    const li = e.target.closest('.reel-track li');
+    if (li) show(li);
+    else hide();
+  });
+  wrap.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') hide(); });
+  document.addEventListener('pointerdown', (e) => { if (!wrap.contains(e.target)) hide(); });
 })();
 </script>
 <script>
