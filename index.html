@@ -248,7 +248,8 @@ a.btn { text-decoration: none; }
 .logo-wall li:is(:hover, .is-active) img { filter: none; opacity: 1; }
 .logo-wall li:focus-visible img { filter: none; opacity: 1;
   outline: 2px solid var(--color-accent); outline-offset: 4px; }
-@media (max-width: 880px) { .logo-wall li { flex-basis: 33.333%; } }
+@media (max-width: 880px) { .logo-wall li { flex-basis: 25%; } }
+@media (max-width: 480px) { .logo-wall li { flex-basis: 50%; } }
 /* partner details: a framed callout above the active logo (below it when the
    nav leaves no room), with a hairline leader to the logo */
 .partner-tip { position: absolute; z-index: 3; top: 0; left: 0;
@@ -453,15 +454,16 @@ footer p { margin: 0; max-width: 48ch; }
     <hr class="caption-rule">
     <div class="partners">
       <ul class="logo-wall" aria-label="Organisations we have worked with">
+        <li tabindex="0"><img src="assets/partners/synaxg.webp" alt="SynaXG" width="180" height="72"><span class="sr-only tip-src"><b>SGI Summation Programme · 2026</b> As a software engineer, Justin builds automated, self-healing monitoring for SynaXG’s AI-RAN solutions.</span></li>
+        <li tabindex="0"><img src="assets/partners/ceva.webp" alt="CEVA Logistics" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2026</b> Edric runs and troubleshoots a KUKA SCARA machine.</span></li>
+        <li tabindex="0"><img src="assets/partners/dell.webp" alt="Dell Technologies" width="180" height="72"><span class="sr-only tip-src"><b>Award · 2026</b> Sprout, Justin’s team project, used cloud technology taught by Dell and won the Dell Technologies Innovation Award.</span></li>
+        <li tabindex="0"><img src="assets/partners/ento.webp" alt="Ento Industries" width="180" height="72"><span class="sr-only tip-src"><b>Project · 2026</b> HERMES, an automated counter for Black Soldier Fly neonates, was built with Ento Industries.</span></li>
+        <li tabindex="0"><img src="assets/partners/griffinlabs.webp" alt="Griffin Labs" width="180" height="72"><span class="sr-only tip-src"><b>Internships · 2025–26</b> Owen evaluated vision-language-action models, and Edric wrote ROS2 control for the LionsBot T1.</span></li>
+        <li tabindex="0"><img src="assets/partners/changi.webp" alt="Changi Airport Group" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2023</b> Phelia supported daily terminal operations as a Changi Youth Ambassador.</span></li>
         <li tabindex="0"><img src="assets/partners/astar.webp" alt="A*STAR" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Justin built an ASP.NET and MQTT web app for IoT devices at the Institute of Microelectronics.</span></li>
         <li tabindex="0"><img src="assets/partners/htx.webp" alt="HTX (Home Team Science and Technology Agency)" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Ryan designed and built PCBs for in-house autonomous drones.</span></li>
-        <li tabindex="0"><img src="assets/partners/changi.webp" alt="Changi Airport Group" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2023</b> Phelia supported daily terminal operations as a Changi Youth Ambassador.</span></li>
-        <li tabindex="0"><img src="assets/partners/dell.webp" alt="Dell Technologies" width="180" height="72"><span class="sr-only tip-src"><b>Award · 2026</b> Sprout, Justin’s team project, used cloud technology taught by Dell and won the Dell Technologies Innovation Award.</span></li>
-        <li tabindex="0"><img src="assets/partners/xilinx.webp" alt="Xilinx" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021</b> Owen automated wafer-test analysis as a product engineering intern.</span></li>
-        <li tabindex="0"><img src="assets/partners/ceva.webp" alt="CEVA Logistics" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2026</b> Edric runs and troubleshoots a KUKA SCARA machine.</span></li>
         <li tabindex="0"><img src="assets/partners/certis.webp" alt="Certis" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021–22</b> Benedict scheduled robot missions and prepared machine-learning data.</span></li>
-        <li tabindex="0"><img src="assets/partners/griffinlabs.webp" alt="Griffin Labs" width="180" height="72"><span class="sr-only tip-src"><b>Internships · 2025–26</b> Owen evaluated vision-language-action models, and Edric wrote ROS2 control for the LionsBot T1.</span></li>
-        <li tabindex="0"><img src="assets/partners/ento.webp" alt="Ento Industries" width="180" height="72"><span class="sr-only tip-src"><b>Project · 2026</b> HERMES, an automated counter for Black Soldier Fly neonates, was built with Ento Industries.</span></li>
+        <li tabindex="0"><img src="assets/partners/xilinx.webp" alt="Xilinx" width="180" height="72"><span class="sr-only tip-src"><b>Internship · 2021</b> Owen automated wafer-test analysis as a product engineering intern.</span></li>
       </ul>
       <div class="partner-tip" aria-hidden="true" hidden>
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
@@ -470,7 +472,7 @@ footer p { margin: 0; max-width: 48ch; }
         <p class="tip-text"></p>
       </div>
     </div>
-    <p class="note">Organisations our members have interned with or built projects for. Hover over or tap a logo for details.</p>
+    <p class="note">Organisations our members have interned with or built projects for, most recent first. Hover over or tap a logo for details.</p>
 
     <span class="sub-label">Selected projects</span>
     <div class="cells two">
